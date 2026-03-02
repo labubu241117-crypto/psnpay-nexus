@@ -7,6 +7,7 @@ import {
   Copy, Share2, Gift, Search, Send, ExternalLink
 } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
+import lumadexLogo from "@/assets/lumadex-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -1054,8 +1055,12 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
               className="glass-card-hover w-full p-4 flex items-center justify-between text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
-                  <item.icon className={`w-5 h-5 ${item.color}`} />
+                <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center overflow-hidden">
+                  {item.label === "Lumadex Website" ? (
+                    <img src={lumadexLogo} alt="Lumadex" className="w-6 h-6 object-contain" />
+                  ) : (
+                    <item.icon className={`w-5 h-5 ${item.color}`} />
+                  )}
                 </div>
                 <div>
                   <p className="font-medium text-sm text-foreground">{item.label}</p>
