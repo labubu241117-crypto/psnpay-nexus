@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Send, Phone, Zap, Wifi, Gamepad2, Wallet, Radio, Truck, Film, Droplets, Recycle, DollarSign, PiggyBank, MapPin, CreditCard } from "lucide-react";
+import { ArrowLeft, Send, Phone, Zap, Wifi, Gamepad2, Wallet, Radio, Truck, Film, Droplets, Recycle, DollarSign, PiggyBank, MapPin, CreditCard, Globe, FileText, Satellite, Smartphone, GraduationCap, HandHeart, Heart } from "lucide-react";
 
 type ServiceConfig = {
   title: string;
@@ -129,6 +129,85 @@ const serviceConfigs: Record<string, ServiceConfig> = {
       { key: "nocontract", label: "No. Kontrak / Pinjaman", placeholder: "Masukkan nomor kontrak", type: "text" },
     ],
   },
+  roaming: {
+    title: "Roaming",
+    icon: Globe,
+    fields: [
+      { key: "provider", label: "Operator", placeholder: "Pilih operator", type: "select", options: ["Telkomsel", "Indosat", "XL Axiata", "Tri", "Smartfren"] },
+      { key: "nomor", label: "Nomor HP", placeholder: "08xxxxxxxxxx", type: "text", inputMode: "tel" },
+      { key: "negara", label: "Negara Tujuan", placeholder: "Pilih negara", type: "select", options: ["Malaysia", "Singapura", "Thailand", "Jepang", "Korea Selatan", "Australia", "Amerika Serikat", "Inggris", "Arab Saudi", "Turki"] },
+      { key: "paket", label: "Paket Roaming", placeholder: "Pilih paket", type: "select", options: ["Data 1GB / 7 Hari - Rp 99.000", "Data 3GB / 15 Hari - Rp 199.000", "Data 5GB / 30 Hari - Rp 299.000", "Nelpon + Data 3GB / 15 Hari - Rp 350.000", "Unlimited / 7 Hari - Rp 450.000"] },
+    ],
+  },
+  "tagihan-saya": {
+    title: "Tagihan Saya",
+    icon: FileText,
+    fields: [
+      { key: "jenis", label: "Jenis Tagihan", placeholder: "Pilih jenis tagihan", type: "select", options: ["Listrik PLN", "PDAM", "BPJS Kesehatan", "BPJS Ketenagakerjaan", "Telkom/IndiHome", "TV Kabel", "Kartu Kredit", "Angsuran"] },
+      { key: "idpel", label: "No. Pelanggan / ID", placeholder: "Masukkan nomor pelanggan", type: "text", inputMode: "numeric" },
+    ],
+  },
+  "tv-internet": {
+    title: "TV Kabel & Internet",
+    icon: Satellite,
+    fields: [
+      { key: "provider", label: "Provider", placeholder: "Pilih provider", type: "select", options: ["IndiHome", "First Media", "MNC Vision", "Transvision", "MyRepublic", "Biznet", "CBN", "Oxygen"] },
+      { key: "idpel", label: "No. Pelanggan", placeholder: "Masukkan nomor pelanggan", type: "text", inputMode: "numeric" },
+    ],
+  },
+  telkom: {
+    title: "Telkom",
+    icon: Phone,
+    fields: [
+      { key: "jenis", label: "Jenis Layanan", placeholder: "Pilih layanan", type: "select", options: ["Telepon Rumah", "Speedy / IndiHome", "Telkom Flexi"] },
+      { key: "idpel", label: "No. Telepon / ID Pelanggan", placeholder: "Masukkan nomor", type: "text", inputMode: "numeric" },
+    ],
+  },
+  pascabayar: {
+    title: "Pasca Bayar",
+    icon: Smartphone,
+    fields: [
+      { key: "provider", label: "Operator", placeholder: "Pilih operator", type: "select", options: ["Telkomsel Halo", "Indosat Matrix", "XL Prioritas", "Tri Pascabayar", "Smartfren Pascabayar"] },
+      { key: "nomor", label: "Nomor HP Pascabayar", placeholder: "08xxxxxxxxxx", type: "text", inputMode: "tel" },
+    ],
+  },
+  "kartu-kredit": {
+    title: "Kartu Kredit",
+    icon: CreditCard,
+    fields: [
+      { key: "bank", label: "Bank Penerbit", placeholder: "Pilih bank", type: "select", options: ["BCA", "Mandiri", "BNI", "BRI", "CIMB Niaga", "Bank Mega", "Permata", "Citibank", "HSBC", "Standard Chartered"] },
+      { key: "nokartu", label: "Nomor Kartu Kredit", placeholder: "xxxx xxxx xxxx xxxx", type: "text", inputMode: "numeric" },
+    ],
+  },
+  pendidikan: {
+    title: "Biaya Pendidikan",
+    icon: GraduationCap,
+    fields: [
+      { key: "institusi", label: "Institusi Pendidikan", placeholder: "Pilih institusi", type: "select", options: ["Universitas Indonesia", "ITB", "UGM", "Unhas", "Unair", "Undip", "UNM", "Universitas Brawijaya", "ITS", "Lainnya"] },
+      { key: "nim", label: "NIM / No. Pendaftaran", placeholder: "Masukkan NIM", type: "text" },
+      { key: "jenis", label: "Jenis Pembayaran", placeholder: "Pilih jenis", type: "select", options: ["SPP", "UKT", "Biaya Wisuda", "Biaya Pendaftaran", "Biaya Praktikum", "Lainnya"] },
+    ],
+  },
+  donasi: {
+    title: "Donasi",
+    icon: HandHeart,
+    fields: [
+      { key: "lembaga", label: "Lembaga Donasi", placeholder: "Pilih lembaga", type: "select", options: ["ACT", "Dompet Dhuafa", "Rumah Zakat", "BAZNAS", "Kitabisa.com", "Aksi Cepat Tanggap", "PMI", "UNICEF Indonesia"] },
+      { key: "program", label: "Program Donasi", placeholder: "Pilih program", type: "select", options: ["Bencana Alam", "Pendidikan Anak", "Kesehatan", "Pangan", "Pembangunan Masjid", "Umum"] },
+      { key: "nominal", label: "Nominal Donasi", placeholder: "Masukkan nominal", type: "number", inputMode: "numeric" },
+      { key: "nama", label: "Nama Donatur", placeholder: "Nama Anda (atau Hamba Allah)", type: "text" },
+    ],
+  },
+  zakat: {
+    title: "Zakat",
+    icon: Heart,
+    fields: [
+      { key: "jenis", label: "Jenis Zakat", placeholder: "Pilih jenis zakat", type: "select", options: ["Zakat Mal", "Zakat Fitrah", "Zakat Penghasilan", "Zakat Emas & Perak", "Zakat Perdagangan"] },
+      { key: "lembaga", label: "Lembaga Penyalur", placeholder: "Pilih lembaga", type: "select", options: ["BAZNAS", "Dompet Dhuafa", "Rumah Zakat", "LAZ Al Azhar", "Yayasan Dana Sosial Al Falah", "NU Care - LAZISNU", "LAZISMU"] },
+      { key: "nominal", label: "Nominal Zakat", placeholder: "Masukkan nominal", type: "number", inputMode: "numeric" },
+      { key: "nama", label: "Nama Muzakki", placeholder: "Nama lengkap Anda", type: "text" },
+    ],
+  },
 };
 
 interface ServiceScreenProps {
@@ -157,7 +236,7 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
   }
 
   const Icon = config.icon;
-  const isPascabayar = ["tagihan-pln", "tagihan-pdam", "tagihan-bpjs", "finance"].includes(serviceId);
+  const isPascabayar = ["tagihan-pln", "tagihan-pdam", "tagihan-bpjs", "finance", "tagihan-saya", "tv-internet", "telkom", "pascabayar", "kartu-kredit", "pendidikan"].includes(serviceId);
 
   const handleChange = (key: string, val: string) => {
     setValues((prev) => ({ ...prev, [key]: val }));
