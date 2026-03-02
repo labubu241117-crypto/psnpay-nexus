@@ -12,6 +12,7 @@ import ServiceScreen from "@/components/ServiceScreen";
 import SimpananScreen from "@/components/SimpananScreen";
 import CheckInScreen from "@/components/CheckInScreen";
 import PulsaScreen from "@/components/PulsaScreen";
+import TokenPlnScreen from "@/components/TokenPlnScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
@@ -38,6 +39,7 @@ const Index = () => {
         {overlay === "simpanan" && <SimpananScreen onBack={() => setOverlay("menu")} />}
         {overlay === "checkin" && <CheckInScreen onBack={() => setOverlay("menu")} />}
         {overlay === "pulsa" && <PulsaScreen onBack={() => setOverlay("menu")} />}
+        {overlay === "token-pln" && <TokenPlnScreen onBack={() => setOverlay("menu")} />}
         {isService && serviceId && <ServiceScreen serviceId={serviceId} onBack={() => setOverlay("menu")} />}
         <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
