@@ -70,6 +70,8 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
     { from: "bot", text: "Halo! 👋 Saya asisten virtual PSNPAY. Ada yang bisa saya bantu?" },
   ]);
   const [chatInput, setChatInput] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("Indonesia");
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
 
   const handleBack = () => {
     setView("main");
@@ -613,6 +615,17 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
 
   // ─── Pengaturan Umum ───
   if (view === "general-settings") {
+    const languages = [
+      { code: "id", label: "Indonesia", flag: "🇮🇩" },
+      { code: "en", label: "English", flag: "🇺🇸" },
+      { code: "ms", label: "Melayu", flag: "🇲🇾" },
+      { code: "zh", label: "中文 (Chinese)", flag: "🇨🇳" },
+      { code: "ar", label: "العربية (Arabic)", flag: "🇸🇦" },
+      { code: "ja", label: "日本語 (Japanese)", flag: "🇯🇵" },
+      { code: "ko", label: "한국어 (Korean)", flag: "🇰🇷" },
+      { code: "th", label: "ไทย (Thai)", flag: "🇹🇭" },
+    ];
+
     return (
       <div className="px-4 pb-28 pt-6 space-y-6">
         <div className="flex items-center gap-3">
@@ -623,35 +636,89 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
         </div>
 
         <div className="space-y-2">
-          {[
-            { icon: Bell, label: "Notifikasi", desc: "Atur notifikasi push & email", toggle: true },
-            { icon: Languages, label: "Bahasa", desc: "Indonesia", toggle: false },
-            { icon: Smartphone, label: "Tampilan", desc: theme === "dark" ? "Mode Gelap" : "Mode Terang", toggle: true, isTheme: true },
-          ].map((item) => (
-            <div key={item.label} className="glass-card p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
-                  <item.icon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium text-sm text-foreground">{item.label}</p>
-                  <p className="text-xs text-muted-foreground">{item.desc}</p>
-                </div>
+          {/* Notifikasi */}
+          <div className="glass-card p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+                <Bell className="w-5 h-5 text-primary" />
               </div>
-              {item.isTheme ? (
-                <button onClick={toggleTheme} className="w-12 h-7 rounded-full bg-primary/20 flex items-center px-1 transition-all">
-                  <div className={`w-5 h-5 rounded-full bg-primary transition-transform ${theme === "dark" ? "translate-x-5" : "translate-x-0"}`} />
-                </button>
-              ) : item.toggle ? (
-                <div className="w-12 h-7 rounded-full bg-primary flex items-center px-1">
-                  <div className="w-5 h-5 rounded-full bg-primary-foreground translate-x-5" />
-                </div>
-              ) : (
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              )}
+              <div>
+                <p className="font-medium text-sm text-foreground">Notifikasi</p>
+                <p className="text-xs text-muted-foreground">Atur notifikasi push & email</p>
+              </div>
             </div>
-          ))}
+            <div className="w-12 h-7 rounded-full bg-primary flex items-center px-1">
+              <div className="w-5 h-5 rounded-full bg-primary-foreground translate-x-5" />
+            </div>
+          </div>
+
+          {/* Bahasa */}
+          <button onClick={() => setShowLanguagePicker(true)} className="glass-card w-full p-4 flex items-center justify-between text-left">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+                <Languages className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium text-sm text-foreground">Bahasa</p>
+                <p className="text-xs text-muted-foreground">{selectedLanguage}</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </button>
+
+          {/* Tampilan */}
+          <div className="glass-card p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+                <Smartphone className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium text-sm text-foreground">Tampilan</p>
+                <p className="text-xs text-muted-foreground">{theme === "dark" ? "Mode Gelap" : "Mode Terang"}</p>
+              </div>
+            </div>
+            <button onClick={toggleTheme} className="w-12 h-7 rounded-full bg-primary/20 flex items-center px-1 transition-all">
+              <div className={`w-5 h-5 rounded-full bg-primary transition-transform ${theme === "dark" ? "translate-x-5" : "translate-x-0"}`} />
+            </button>
+          </div>
         </div>
+
+        {/* Language Picker Dialog */}
+        {showLanguagePicker && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={() => setShowLanguagePicker(false)}>
+            <div className="w-full max-w-md bg-background rounded-t-3xl p-6 space-y-4 animate-in slide-in-from-bottom" onClick={e => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-foreground">Pilih Bahasa</h3>
+                <button onClick={() => setShowLanguagePicker(false)} className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                  <X className="w-4 h-4 text-foreground" />
+                </button>
+              </div>
+              <div className="space-y-1 max-h-[60vh] overflow-y-auto">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setSelectedLanguage(lang.label);
+                      setShowLanguagePicker(false);
+                      toast({ title: `Bahasa diubah ke ${lang.label} ${lang.flag}` });
+                    }}
+                    className={`w-full p-4 rounded-2xl flex items-center justify-between transition-all ${
+                      selectedLanguage === lang.label ? "bg-primary/10 border border-primary/30" : "hover:bg-secondary"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{lang.flag}</span>
+                      <span className="font-medium text-sm text-foreground">{lang.label}</span>
+                    </div>
+                    {selectedLanguage === lang.label && (
+                      <CheckCircle2 className="w-5 h-5 text-primary" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="glass-card p-4 space-y-3">
           <h3 className="font-semibold text-foreground text-sm">Tentang Aplikasi</h3>
