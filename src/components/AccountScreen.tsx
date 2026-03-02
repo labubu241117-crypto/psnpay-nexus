@@ -19,11 +19,15 @@ const accountSettings = [
 
 const services = [
   { icon: Shield, label: "KYC & Menjadi Mitra", desc: "Verifikasi akun & jadi mitra", color: "text-neon-purple", view: "kyc" as AccountView },
-  { icon: FileText, label: "Mutasi", desc: "Riwayat transaksi lengkap", color: "text-primary", view: null },
+  { icon: FileText, label: "Mutasi", desc: "Riwayat transaksi lengkap", color: "text-primary", view: "mutasi" as any },
   { icon: KeyRound, label: "Developer API", desc: "API keys & webhooks", color: "text-neon-cyan", view: null },
 ];
 
-export default function AccountScreen() {
+interface AccountScreenProps {
+  onNavigate?: (screen: string) => void;
+}
+
+export default function AccountScreen({ onNavigate }: AccountScreenProps) {
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
   const [view, setView] = useState<AccountView>("main");
@@ -676,7 +680,13 @@ export default function AccountScreen() {
           {services.map((item) => (
             <button
               key={item.label}
-              onClick={() => item.view && setView(item.view)}
+              onClick={() => {
+                if (item.view === "mutasi") {
+                  onNavigate?.("mutasi");
+                } else if (item.view) {
+                  setView(item.view);
+                }
+              }}
               className="glass-card-hover w-full p-4 flex items-center justify-between text-left"
             >
               <div className="flex items-center gap-3">
