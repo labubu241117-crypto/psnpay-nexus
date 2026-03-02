@@ -77,7 +77,7 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
 
   const actions = [
     { icon: ArrowLeftRight, label: "Transfer", onClick: () => onNavigate?.("transfer") },
-    { icon: PlusCircle, label: "Top Up" },
+    { icon: PlusCircle, label: "Top Up", onClick: () => onNavigate?.("topup") },
     { icon: CreditCard, label: "E-Money" },
     { icon: MoreHorizontal, label: "Lainnya", onClick: () => onNavigate?.("menu") },
   ];

@@ -6,13 +6,14 @@ import ActivityScreen from "@/components/ActivityScreen";
 import AccountScreen from "@/components/AccountScreen";
 import MenuScreen from "@/components/MenuScreen";
 import TransferScreen from "@/components/TransferScreen";
+import TopUpScreen from "@/components/TopUpScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [overlay, setOverlay] = useState<string | null>(null);
 
   const handleNavigate = (screen: string) => {
-    if (screen === "menu" || screen === "transfer") {
+    if (screen === "menu" || screen === "transfer" || screen === "topup") {
       setOverlay(screen);
     } else if (screen === "wallet") {
       setActiveTab("wallet");
@@ -24,6 +25,7 @@ const Index = () => {
       <div className="min-h-screen max-w-md mx-auto relative">
         {overlay === "menu" && <MenuScreen onBack={() => setOverlay(null)} onNavigate={(s) => setOverlay(s)} />}
         {overlay === "transfer" && <TransferScreen onBack={() => setOverlay(null)} />}
+        {overlay === "topup" && <TopUpScreen onBack={() => setOverlay(null)} />}
         <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
     );
