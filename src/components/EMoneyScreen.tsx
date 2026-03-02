@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { ArrowLeft, CreditCard, Wifi, Info, Contact, ChevronRight, RefreshCw } from "lucide-react";
+import { ArrowLeft, CreditCard, Wifi, Info, Contact, ChevronRight, RefreshCw, DollarSign, Send } from "lucide-react";
 
 const providers = [
   { id: "emandiri", name: "EMoney Mandiri", code: "EMONEYMDR", initial: "P", color: "bg-primary/20 text-primary" },
   { id: "brizzi", name: "Brizzi BRI", code: "BRIZZIBRI", initial: "P", color: "bg-primary/20 text-primary" },
 ];
+
+const nominalOptions = [20000, 50000, 100000, 200000, 500000, 1000000];
 
 interface EMoneyScreenProps {
   onBack: () => void;
@@ -12,12 +14,137 @@ interface EMoneyScreenProps {
 
 export default function EMoneyScreen({ onBack }: EMoneyScreenProps) {
   const [cardNumber, setCardNumber] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState<typeof providers[0] | null>(null);
+  const [selectedNominal, setSelectedNominal] = useState<number | null>(null);
+  const [customNominal, setCustomNominal] = useState("");
 
   const formatCard = (val: string) => {
     const digits = val.replace(/\D/g, "").slice(0, 16);
     return digits.replace(/(.{4})/g, "$1 ").trim();
   };
 
+  const finalNominal = selectedNominal || (customNominal ? parseInt(customNominal) : 0);
+  const isValid = finalNominal >= 20000;
+
+  const handleSubmit = () => {
+    if (!isValid) return;
+    alert(`Top Up ${selectedProvider?.name} - Rp ${finalNominal.toLocaleString("id-ID")}`);
+  };
+
+  // Top Up Nominal Screen
+  if (selectedProvider) {
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-5">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => { setSelectedProvider(null); setSelectedNominal(null); setCustomNominal(""); }}
+            className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center text-foreground hover:neon-glow transition-all"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Top Up E-Money</h2>
+        </div>
+
+        {/* Selected Provider Card */}
+        <div className="glass-card p-4 neon-border flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-full ${selectedProvider.color} flex items-center justify-center text-lg font-bold`}>
+            {selectedProvider.initial}
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-foreground">{selectedProvider.name}</p>
+            <p className="text-xs text-muted-foreground">{selectedProvider.code}</p>
+          </div>
+          <CreditCard className="w-5 h-5 text-primary" />
+        </div>
+
+        {/* Pilih Nominal */}
+        <div className="space-y-3">
+          <p className="text-sm font-bold text-foreground">Pilih Nominal</p>
+          <div className="grid grid-cols-3 gap-2">
+            {nominalOptions.map((nom) => {
+              const isSelected = selectedNominal === nom;
+              return (
+                <button
+                  key={nom}
+                  onClick={() => { setSelectedNominal(nom); setCustomNominal(""); }}
+                  className={`py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    isSelected
+                      ? "gradient-neon-bg text-primary-foreground neon-glow"
+                      : "bg-secondary text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Rp {nom.toLocaleString("id-ID")}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Custom Nominal */}
+        <div className="glass-card p-4 space-y-2">
+          <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <DollarSign className="w-4 h-4 text-primary" />
+            Atau Masukkan Nominal Lain
+          </label>
+          <div className="flex items-center gap-2 bg-secondary rounded-xl px-4 py-3">
+            <span className="text-sm font-semibold text-muted-foreground">Rp</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="Min. 20.000"
+              value={customNominal}
+              onChange={(e) => { setCustomNominal(e.target.value.replace(/\D/g, "")); setSelectedNominal(null); }}
+              className="flex-1 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+          {customNominal && parseInt(customNominal) > 0 && (
+            <p className="text-xs text-primary pl-1">
+              Rp {parseInt(customNominal).toLocaleString("id-ID")}
+            </p>
+          )}
+          {customNominal && parseInt(customNominal) > 0 && parseInt(customNominal) < 20000 && (
+            <p className="text-xs text-[hsl(var(--neon-red))] pl-1">Minimal top up Rp 20.000</p>
+          )}
+        </div>
+
+        {/* Summary */}
+        {finalNominal > 0 && (
+          <div className="glass-card p-4 space-y-2 animate-counter">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Nominal Top Up</p>
+              <p className="text-sm font-bold text-foreground">Rp {finalNominal.toLocaleString("id-ID")}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Biaya Admin</p>
+              <p className="text-sm font-bold text-[hsl(var(--neon-green))]">Gratis</p>
+            </div>
+            <div className="border-t border-border my-1" />
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-foreground">Total Bayar</p>
+              <p className="text-lg font-bold neon-text">Rp {finalNominal.toLocaleString("id-ID")}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          disabled={!isValid}
+          className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all duration-300 ${
+            isValid
+              ? "gradient-neon-bg text-primary-foreground neon-glow-strong hover:scale-[1.02] active:scale-[0.98]"
+              : "bg-secondary text-muted-foreground cursor-not-allowed"
+          }`}
+        >
+          <Send className="w-5 h-5" />
+          Bayar Sekarang
+        </button>
+      </div>
+    );
+  }
+
+  // Main Screen - Card Input & Provider Selection
   return (
     <div className="px-4 pb-28 pt-6 space-y-5">
       {/* Header */}
@@ -74,6 +201,7 @@ export default function EMoneyScreen({ onBack }: EMoneyScreenProps) {
         {providers.map((provider) => (
           <button
             key={provider.id}
+            onClick={() => setSelectedProvider(provider)}
             className="w-full glass-card p-4 flex items-center gap-4 hover:neon-border transition-all duration-200"
           >
             <div className={`w-12 h-12 rounded-full ${provider.color} flex items-center justify-center text-lg font-bold`}>
