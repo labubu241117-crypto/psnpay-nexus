@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Send, Phone, Zap, Wifi, Gamepad2, Wallet, Radio, Truck, Film, Droplets, Recycle, DollarSign, PiggyBank, MapPin, CreditCard, Globe, FileText, Satellite, Smartphone, GraduationCap, HandHeart, Heart } from "lucide-react";
+import { addTransaction, getTransactionsByService, type Transaction } from "@/lib/transaction-history";
+import TransactionHistory from "./TransactionHistory";
 
 type ServiceConfig = {
   title: string;
@@ -221,6 +223,11 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
   const [selectedNominal, setSelectedNominal] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [tagihan, setTagihan] = useState<{ found: boolean; amount?: number } | null>(null);
+  const [history, setHistory] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    setHistory(getTransactionsByService(serviceId));
+  }, [serviceId, showResult]);
 
   if (!config) {
     return (
@@ -253,6 +260,13 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
   };
 
   const handleSubmit = () => {
+    const total = isPascabayar ? tagihan?.amount : selectedNominal;
+    addTransaction({
+      serviceId,
+      serviceTitle: config.title,
+      values: { ...values },
+      nominal: total || undefined,
+    });
     setShowResult(true);
   };
 
@@ -434,6 +448,9 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
           </div>
         </div>
       )}
+
+      {/* Transaction History */}
+      {history.length > 0 && <TransactionHistory transactions={history} />}
 
       {/* Submit */}
       <button
