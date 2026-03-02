@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import {
   Send, CreditCard, ArrowLeftRight, Key, Eye, EyeOff, RefreshCw,
-  ArrowLeft, QrCode, Copy, Check, ChevronDown, ArrowDownLeft, Shield, Lock
+  ArrowLeft, QrCode, Copy, Check, ChevronDown, ArrowDownLeft, Shield, Lock,
+  ArrowUpDown, TrendingUp, Info
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -17,7 +18,17 @@ const walletTokens = [
   { symbol: "BTC", name: "Bitcoin", network: "BTC", balance: "0.000000", icon: "₿", address: "bc1q...xm4z" },
 ];
 
-type WalletView = "main" | "send" | "receive" | "privatekey";
+// Mock price data in USD
+const mockPrices: Record<string, number> = {
+  BNB: 620,
+  ETH: 3800,
+  POL: 0.85,
+  PEPE: 0.0000125,
+  USDT: 1,
+  BTC: 97000,
+};
+
+type WalletView = "main" | "send" | "receive" | "privatekey" | "swap";
 
 export default function WalletScreen() {
   const [balanceVisible, setBalanceVisible] = useState(true);
@@ -39,8 +50,55 @@ export default function WalletScreen() {
   const [pinError, setPinError] = useState(false);
   const [keyRevealed, setKeyRevealed] = useState(false);
 
+  // Swap state
+  const [swapFrom, setSwapFrom] = useState(walletTokens[0]);
+  const [swapTo, setSwapTo] = useState(walletTokens[4]); // USDT default
+  const [swapAmount, setSwapAmount] = useState("");
+  const [swapConfirm, setSwapConfirm] = useState(false);
+  const [swapSuccess, setSwapSuccess] = useState(false);
+
   const MOCK_PIN = "123456";
   const MOCK_PRIVATE_KEY = "5Kb8kLf9zgWQnogidDA76MzPL6TsZZY36hWXMssSzNydYXYB9KF";
+
+  const swapEstimate = useMemo(() => {
+    if (!swapAmount || isNaN(Number(swapAmount))) return "0.000000";
+    const fromPrice = mockPrices[swapFrom.symbol] || 0;
+    const toPrice = mockPrices[swapTo.symbol] || 1;
+    const result = (Number(swapAmount) * fromPrice) / toPrice;
+    return result < 0.01 ? result.toFixed(8) : result.toFixed(6);
+  }, [swapAmount, swapFrom.symbol, swapTo.symbol]);
+
+  const swapRate = useMemo(() => {
+    const fromPrice = mockPrices[swapFrom.symbol] || 0;
+    const toPrice = mockPrices[swapTo.symbol] || 1;
+    const rate = fromPrice / toPrice;
+    return rate < 0.01 ? rate.toFixed(8) : rate.toFixed(6);
+  }, [swapFrom.symbol, swapTo.symbol]);
+
+  const handleSwapTokens = () => {
+    const temp = swapFrom;
+    setSwapFrom(swapTo);
+    setSwapTo(temp);
+    setSwapAmount("");
+    setSwapConfirm(false);
+  };
+
+  const handleSwap = () => {
+    if (!swapAmount) return;
+    if (!swapConfirm) {
+      setSwapConfirm(true);
+      return;
+    }
+    setSwapSuccess(true);
+    toast.success("Swap berhasil!");
+  };
+
+  const resetSwap = () => {
+    setSwapAmount("");
+    setSwapConfirm(false);
+    setSwapSuccess(false);
+    setView("main");
+  };
 
   const handleCopyAddress = (addr: string) => {
     navigator.clipboard.writeText(addr);
@@ -82,7 +140,7 @@ export default function WalletScreen() {
   const actions = [
     { icon: Send, label: "Kirim", onClick: () => setView("send") },
     { icon: ArrowDownLeft, label: "Terima", onClick: () => setView("receive") },
-    { icon: ArrowLeftRight, label: "Tukar", onClick: () => toast.info("Fitur Tukar segera hadir") },
+    { icon: ArrowLeftRight, label: "Tukar", onClick: () => setView("swap") },
     { icon: Key, label: "Private Key", onClick: () => { setKeyRevealed(false); setPinDialog(true); } },
   ];
 
@@ -297,6 +355,183 @@ export default function WalletScreen() {
           <Copy className="w-4 h-4" />
           Salin Alamat
         </button>
+      </div>
+    );
+  }
+
+  // ============== SWAP VIEW ==============
+  if (view === "swap") {
+    if (swapSuccess) {
+      return (
+        <div className="px-4 pb-28 pt-6 space-y-6">
+          <div className="flex flex-col items-center justify-center py-12 space-y-4">
+            <div className="w-20 h-20 rounded-full bg-[hsl(var(--neon-green)/0.15)] flex items-center justify-center">
+              <Check className="w-10 h-10 text-[hsl(var(--neon-green))]" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">Swap Berhasil!</h2>
+            <p className="text-sm text-muted-foreground text-center">
+              {swapAmount} {swapFrom.symbol} → {swapEstimate} {swapTo.symbol}
+            </p>
+            <div className="glass-card p-3 w-full space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">TX Hash</span>
+                <span className="text-foreground font-mono">0x{crypto.randomUUID().slice(0, 16)}...</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Rate</span>
+                <span className="text-foreground">1 {swapFrom.symbol} = {swapRate} {swapTo.symbol}</span>
+              </div>
+            </div>
+            <button onClick={resetSwap} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold mt-4">
+              Kembali ke Dompet
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    const availableToTokens = walletTokens.filter(t => t.symbol !== swapFrom.symbol);
+
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-5">
+        <div className="flex items-center gap-3">
+          <button onClick={resetSwap} className="w-9 h-9 rounded-xl bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Tukar Token</h2>
+        </div>
+
+        {/* From token */}
+        <div className="glass-card p-4 space-y-3">
+          <label className="text-xs text-muted-foreground">Dari</label>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg shrink-0">
+              {swapFrom.icon}
+            </div>
+            <div className="relative flex-1">
+              <select
+                value={swapFrom.symbol}
+                onChange={(e) => {
+                  const token = walletTokens.find(t => t.symbol === e.target.value)!;
+                  if (token.symbol === swapTo.symbol) setSwapTo(swapFrom);
+                  setSwapFrom(token);
+                  setSwapConfirm(false);
+                }}
+                disabled={swapConfirm}
+                className="w-full bg-secondary text-foreground rounded-xl py-3 px-4 pr-10 appearance-none text-sm font-medium disabled:opacity-60"
+              >
+                {walletTokens.map(t => (
+                  <option key={t.symbol} value={t.symbol}>{t.name} ({t.symbol})</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <input
+              type="number"
+              placeholder="0.000000"
+              value={swapAmount}
+              onChange={(e) => { setSwapAmount(e.target.value); setSwapConfirm(false); }}
+              disabled={swapConfirm}
+              className="w-full bg-secondary text-foreground rounded-xl py-3 px-4 text-sm placeholder:text-muted-foreground/50 disabled:opacity-60"
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Saldo: {swapFrom.balance} {swapFrom.symbol}
+            </p>
+          </div>
+        </div>
+
+        {/* Swap direction button */}
+        <div className="flex justify-center -my-2">
+          <button
+            onClick={handleSwapTokens}
+            disabled={swapConfirm}
+            className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center hover:bg-primary/20 transition-colors disabled:opacity-50"
+          >
+            <ArrowUpDown className="w-5 h-5 text-primary" />
+          </button>
+        </div>
+
+        {/* To token */}
+        <div className="glass-card p-4 space-y-3">
+          <label className="text-xs text-muted-foreground">Ke</label>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-lg shrink-0">
+              {swapTo.icon}
+            </div>
+            <div className="relative flex-1">
+              <select
+                value={swapTo.symbol}
+                onChange={(e) => {
+                  setSwapTo(walletTokens.find(t => t.symbol === e.target.value)!);
+                  setSwapConfirm(false);
+                }}
+                disabled={swapConfirm}
+                className="w-full bg-secondary text-foreground rounded-xl py-3 px-4 pr-10 appearance-none text-sm font-medium disabled:opacity-60"
+              >
+                {availableToTokens.map(t => (
+                  <option key={t.symbol} value={t.symbol}>{t.name} ({t.symbol})</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+          <div className="bg-secondary rounded-xl py-3 px-4">
+            <p className="text-sm font-semibold text-foreground">
+              ≈ {swapEstimate} <span className="text-primary">{swapTo.symbol}</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Rate info */}
+        <div className="glass-card p-3 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-primary shrink-0" />
+          <div className="flex-1">
+            <p className="text-xs text-foreground">
+              1 {swapFrom.symbol} ≈ {swapRate} {swapTo.symbol}
+            </p>
+            <p className="text-[10px] text-muted-foreground">Estimasi harga • Termasuk fee 0.3%</p>
+          </div>
+          <Info className="w-3.5 h-3.5 text-muted-foreground" />
+        </div>
+
+        {/* Confirmation details */}
+        {swapConfirm && (
+          <div className="glass-card p-4 space-y-3 neon-border animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <h3 className="font-semibold text-foreground text-sm">Konfirmasi Swap</h3>
+            <div className="space-y-2">
+              {[
+                ["Dari", `${swapAmount} ${swapFrom.symbol}`],
+                ["Ke", `≈ ${swapEstimate} ${swapTo.symbol}`],
+                ["Rate", `1 ${swapFrom.symbol} = ${swapRate} ${swapTo.symbol}`],
+                ["Fee", "0.3%"],
+                ["Slippage", "0.5%"],
+                ["Network", swapFrom.network],
+              ].map(([k, v]) => (
+                <div key={k} className="flex justify-between">
+                  <span className="text-xs text-muted-foreground">{k}</span>
+                  <span className="text-xs text-foreground font-medium">{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          {swapConfirm && (
+            <button onClick={() => setSwapConfirm(false)} className="flex-1 py-3 rounded-xl bg-secondary text-foreground font-semibold text-sm">
+              Ubah
+            </button>
+          )}
+          <button
+            onClick={handleSwap}
+            disabled={!swapAmount || Number(swapAmount) <= 0}
+            className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-40"
+          >
+            {swapConfirm ? "Konfirmasi Swap" : "Preview Swap"}
+          </button>
+        </div>
       </div>
     );
   }
