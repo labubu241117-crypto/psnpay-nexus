@@ -8,6 +8,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import TokenDetailScreen from "@/components/TokenDetailScreen";
 
 const walletTokens = [
   { symbol: "BNB", name: "BNB Smart Chain", network: "BEP20", balance: "0.000000", icon: "🔶", address: "0x7a3b...f92e" },
@@ -28,7 +29,7 @@ const mockPrices: Record<string, number> = {
   BTC: 97000,
 };
 
-type WalletView = "main" | "send" | "receive" | "privatekey" | "swap";
+type WalletView = "main" | "send" | "receive" | "privatekey" | "swap" | "detail";
 
 export default function WalletScreen() {
   const [balanceVisible, setBalanceVisible] = useState(true);
@@ -536,6 +537,17 @@ export default function WalletScreen() {
     );
   }
 
+  // ============== DETAIL VIEW ==============
+  if (view === "detail") {
+    return (
+      <TokenDetailScreen
+        token={selectedToken}
+        balanceVisible={balanceVisible}
+        onBack={() => setView("main")}
+      />
+    );
+  }
+
   // ============== PRIVATE KEY VIEW ==============
   if (view === "privatekey" && keyRevealed) {
     return (
@@ -638,7 +650,7 @@ export default function WalletScreen() {
             {walletTokens.map((token) => (
               <button
                 key={token.symbol}
-                onClick={() => { setSelectedToken(token); setView("receive"); }}
+                onClick={() => { setSelectedToken(token); setView("detail"); }}
                 className="w-full glass-card-hover p-4 flex items-center justify-between text-left"
               >
                 <div className="flex items-center gap-3">
