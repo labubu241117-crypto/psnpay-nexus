@@ -106,9 +106,14 @@ export default function PulsaScreen({ onBack }: PulsaScreenProps) {
       {/* Phone Input */}
       <div className="px-4 mb-4">
         <div className="glass-card p-4 flex items-center gap-3">
-          <p className="text-2xl font-bold text-foreground tracking-wider flex-1 font-mono">
-            {phone ? formatPhone(phone) : <span className="text-muted-foreground text-lg font-normal">Masukkan nomor HP</span>}
-          </p>
+          <input
+            type="tel"
+            inputMode="numeric"
+            placeholder="Masukkan nomor HP"
+            value={formatPhone(phone)}
+            onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+            className="flex-1 bg-transparent text-2xl font-bold text-foreground font-mono tracking-wider outline-none placeholder:text-muted-foreground placeholder:text-lg placeholder:font-normal placeholder:tracking-normal"
+          />
           <div className="flex items-center gap-2">
             {operator && (
               <span className="text-xs px-2 py-1 rounded-lg bg-secondary font-bold text-foreground">{operator}</span>
@@ -123,37 +128,6 @@ export default function PulsaScreen({ onBack }: PulsaScreenProps) {
             </button>
           </div>
         </div>
-        {!phone && (
-          <div className="mt-3">
-            <input
-              type="tel"
-              inputMode="numeric"
-              placeholder="08xxxxxxxxxx"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-full bg-secondary text-foreground rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition-all placeholder:text-muted-foreground"
-              autoFocus
-            />
-          </div>
-        )}
-        {phone && !phone.startsWith("0") && (
-          <input
-            type="tel"
-            inputMode="numeric"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-            className="w-full mt-2 bg-secondary text-foreground rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
-          />
-        )}
-        {phone && phone.length < 10 && (
-          <input
-            type="tel"
-            inputMode="numeric"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
-            className="w-full mt-2 bg-secondary text-foreground rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-          />
-        )}
       </div>
 
       {/* Tabs */}
