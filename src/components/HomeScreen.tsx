@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Shield, Eye, EyeOff, ArrowLeftRight, PlusCircle, CreditCard, MoreHorizontal, Copy, Star, TrendingUp, TrendingDown, Store } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Shield, Eye, EyeOff, ArrowLeftRight, PlusCircle, CreditCard, MoreHorizontal, Copy, Star, Store, Gift, Percent, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
 
 function AnimatedBalance({ value, visible }: { value: string; visible: boolean }) {
@@ -24,10 +24,25 @@ function AnimatedBalance({ value, visible }: { value: string; visible: boolean }
   return <span className="text-3xl font-bold tracking-tight animate-counter">{display}</span>;
 }
 
-const tokens = [
-  { symbol: "BNB", name: "BNB Smart Chain", network: "BEP20", balance: "0.000000", change: "+2.1%", up: true },
-  { symbol: "ETH", name: "Ethereum", network: "ERC20", balance: "0.000000", change: "+1.8%", up: true },
-  { symbol: "POL", name: "Polygon", network: "POLYGON", balance: "0.000000", change: "-0.5%", up: false },
+const promoSlides = [
+  {
+    title: "Cashback 20%",
+    desc: "Top up saldo dan dapatkan cashback hingga Rp 50.000",
+    icon: Percent,
+    gradient: "from-primary to-accent",
+  },
+  {
+    title: "Referral Bonus",
+    desc: "Ajak teman bergabung & dapatkan Rp 25.000 per referral",
+    icon: Gift,
+    gradient: "from-neon-green to-primary",
+  },
+  {
+    title: "Flash Sale Token",
+    desc: "Beli token PLN & pulsa dengan diskon spesial hari ini",
+    icon: Zap,
+    gradient: "from-neon-orange to-neon-red",
+  },
 ];
 
 const mitraUMKM = [
@@ -42,6 +57,15 @@ interface HomeScreenProps {
 export default function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  // Auto-slide
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % promoSlides.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const memberId = "169000000232";
 
@@ -116,10 +140,68 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
         ))}
       </div>
 
-      {/* Banner Promo */}
+      {/* Promo Banner Slider */}
+      <div className="relative">
+        <div className="overflow-hidden rounded-2xl">
+          <div
+            className="flex transition-transform duration-500 ease-out"
+            style={{ transform: `translateX(-${activeSlide * 100}%)` }}
+          >
+            {promoSlides.map((slide, i) => {
+              const Icon = slide.icon;
+              return (
+                <div key={i} className="min-w-full">
+                  <div className={`p-5 rounded-2xl bg-gradient-to-br ${slide.gradient} relative overflow-hidden`}>
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="w-14 h-14 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-7 h-7 text-primary-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-lg text-primary-foreground">{slide.title}</p>
+                        <p className="text-sm text-primary-foreground/80 mt-0.5">{slide.desc}</p>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full bg-primary-foreground/10 blur-xl" />
+                    <div className="absolute -top-4 -left-4 w-20 h-20 rounded-full bg-primary-foreground/10 blur-lg" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Navigation arrows */}
+        <button
+          onClick={() => setActiveSlide((prev) => (prev - 1 + promoSlides.length) % promoSlides.length)}
+          className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-background/80 transition-all"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => setActiveSlide((prev) => (prev + 1) % promoSlides.length)}
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-background/80 transition-all"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+
+        {/* Dots */}
+        <div className="flex justify-center gap-1.5 mt-3">
+          {promoSlides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveSlide(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === activeSlide ? "w-6 bg-primary neon-glow" : "w-1.5 bg-muted-foreground/30"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* KoaS Partner */}
       <div className="glass-card p-4 neon-border overflow-hidden relative">
         <div className="flex items-center gap-3">
-          <img src={psnpayLogo} alt="PSNPAY" className="w-14 h-14 rounded-xl" />
+          <img src={psnpayLogo} alt="PSNPAY" className="w-12 h-12 rounded-xl" />
           <div>
             <p className="font-bold text-foreground">Koperasi Cerdas Indonesia</p>
             <p className="text-xs text-muted-foreground mt-0.5">(KoaS) — Partner resmi PSNPAY</p>
