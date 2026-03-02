@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Send, Phone, Zap, Wifi, Gamepad2, Wallet, Radio, Truck, Film, Droplets, Recycle, DollarSign, PiggyBank, MapPin, CreditCard, Globe, FileText, Satellite, Smartphone, GraduationCap, HandHeart, Heart } from "lucide-react";
+import { ArrowLeft, Send, Phone, Zap, Wifi, Gamepad2, Wallet, Radio, Truck, Film, Droplets, Recycle, DollarSign, PiggyBank, MapPin, CreditCard, Globe, FileText, Satellite, Smartphone, GraduationCap, HandHeart, Heart, Star, StarOff } from "lucide-react";
 import { addTransaction, getTransactionsByService, type Transaction } from "@/lib/transaction-history";
+import { addFavorite, getFavoritesByService, removeFavorite, type Favorite } from "@/lib/favorites";
 import TransactionHistory from "./TransactionHistory";
+import FavoritePicker from "./FavoritePicker";
 
 type ServiceConfig = {
   title: string;
@@ -224,10 +226,32 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
   const [showResult, setShowResult] = useState(false);
   const [tagihan, setTagihan] = useState<{ found: boolean; amount?: number } | null>(null);
   const [history, setHistory] = useState<Transaction[]>([]);
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
 
   useEffect(() => {
     setHistory(getTransactionsByService(serviceId));
+    setFavorites(getFavoritesByService(serviceId));
   }, [serviceId, showResult]);
+
+  const generateFavLabel = () => {
+    const firstText = config.fields.find(f => f.type === "text" && values[f.key]);
+    const firstSelect = config.fields.find(f => f.type === "select" && values[f.key]);
+    return [firstSelect && values[firstSelect.key], firstText && values[firstText.key]].filter(Boolean).join(" - ") || config.title;
+  };
+
+  const handleSaveFavorite = () => {
+    addFavorite({ serviceId, label: generateFavLabel(), values: { ...values } });
+    setFavorites(getFavoritesByService(serviceId));
+  };
+
+  const handleRemoveFavorite = (id: string) => {
+    removeFavorite(id);
+    setFavorites(getFavoritesByService(serviceId));
+  };
+
+  const handleLoadFavorite = (favValues: Record<string, string>) => {
+    setValues(favValues);
+  };
 
   if (!config) {
     return (
@@ -350,6 +374,9 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
         </div>
       </div>
 
+      {/* Favorites */}
+      <FavoritePicker favorites={favorites} onSelect={handleLoadFavorite} onRemove={handleRemoveFavorite} />
+
       {/* Fields */}
       <div className="space-y-4">
         {config.fields.map((field) => (
@@ -379,6 +406,17 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
           </div>
         ))}
       </div>
+
+      {/* Save Favorite Button */}
+      {allFieldsFilled && (
+        <button
+          onClick={handleSaveFavorite}
+          className="w-full py-3 rounded-xl bg-secondary text-foreground font-medium text-sm flex items-center justify-center gap-2 hover:bg-muted transition-all"
+        >
+          <Star className="w-4 h-4 text-primary" />
+          Simpan sebagai Favorit
+        </button>
+      )}
 
       {/* Nominal Selection (Prabayar) */}
       {config.nominals && (
