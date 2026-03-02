@@ -2,14 +2,16 @@ import { useState, useMemo } from "react";
 import {
   Shield, UserCheck, Lock, ChevronRight, BadgeCheck, User, KeyRound,
   FileText, Info, Fingerprint, LogOut, Sun, Moon, ArrowLeft, Eye, EyeOff,
-  Camera, Save, CheckCircle2, Upload, AlertTriangle, X
+  Camera, Save, CheckCircle2, Upload, AlertTriangle, X, Settings, ShieldCheck,
+  Users, HelpCircle, MessageCircle, Globe, Bell, Languages, Smartphone,
+  Copy, Share2, Gift, Search, Send, ExternalLink
 } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 
-type AccountView = "main" | "profile" | "password" | "pin" | "kyc";
+type AccountView = "main" | "profile" | "password" | "pin" | "kyc" | "general-settings" | "security" | "invite" | "help" | "chatbot";
 
 const accountSettings = [
   { icon: User, label: "Profil", color: "text-primary", view: "profile" as AccountView },
@@ -62,6 +64,12 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
   const [ktpUploaded, setKtpUploaded] = useState(false);
   const [selfieUploaded, setSelfieUploaded] = useState(false);
 
+  // Chat bot state
+  const [chatMessages, setChatMessages] = useState<{ from: "bot" | "user"; text: string }[]>([
+    { from: "bot", text: "Halo! 👋 Saya asisten virtual PSNPAY. Ada yang bisa saya bantu?" },
+  ]);
+  const [chatInput, setChatInput] = useState("");
+
   const handleBack = () => {
     setView("main");
     // Reset states
@@ -70,6 +78,8 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
     setPwSuccess(false);
     setPinStep("verify"); setCurrentPin(""); setNewPin(""); setConfirmPin(""); setPinError("");
     setKycStep("info"); setKycNik(""); setKycAddress(""); setKtpUploaded(false); setSelfieUploaded(false);
+    setChatMessages([{ from: "bot", text: "Halo! 👋 Saya asisten virtual PSNPAY. Ada yang bisa saya bantu?" }]);
+    setChatInput("");
   };
 
   // ─── Edit Profil ───
@@ -600,6 +610,328 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
     );
   }
 
+  // ─── Pengaturan Umum ───
+  if (view === "general-settings") {
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <button onClick={handleBack} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Pengaturan Umum</h2>
+        </div>
+
+        <div className="space-y-2">
+          {[
+            { icon: Bell, label: "Notifikasi", desc: "Atur notifikasi push & email", toggle: true },
+            { icon: Languages, label: "Bahasa", desc: "Indonesia", toggle: false },
+            { icon: Smartphone, label: "Tampilan", desc: theme === "dark" ? "Mode Gelap" : "Mode Terang", toggle: true, isTheme: true },
+          ].map((item) => (
+            <div key={item.label} className="glass-card p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-foreground">{item.label}</p>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
+                </div>
+              </div>
+              {item.isTheme ? (
+                <button onClick={toggleTheme} className="w-12 h-7 rounded-full bg-primary/20 flex items-center px-1 transition-all">
+                  <div className={`w-5 h-5 rounded-full bg-primary transition-transform ${theme === "dark" ? "translate-x-5" : "translate-x-0"}`} />
+                </button>
+              ) : item.toggle ? (
+                <div className="w-12 h-7 rounded-full bg-primary flex items-center px-1">
+                  <div className="w-5 h-5 rounded-full bg-primary-foreground translate-x-5" />
+                </div>
+              ) : (
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="glass-card p-4 space-y-3">
+          <h3 className="font-semibold text-foreground text-sm">Tentang Aplikasi</h3>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Versi</span>
+            <span className="text-foreground">1.0.0</span>
+          </div>
+          <div className="h-px bg-border" />
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Build</span>
+            <span className="text-foreground">2026.03.02</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Keamanan Akun ───
+  if (view === "security") {
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <button onClick={handleBack} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Keamanan Akun</h2>
+        </div>
+
+        <div className="glass-card p-4 flex items-start gap-3">
+          <ShieldCheck className="w-5 h-5 text-neon-green shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground">Tingkatkan keamanan akun Anda dengan mengaktifkan fitur-fitur berikut.</p>
+        </div>
+
+        <div className="space-y-2">
+          {[
+            { icon: Lock, label: "Ubah Password", desc: "Ganti password login Anda", action: () => setView("password") },
+            { icon: Fingerprint, label: "Ubah PIN", desc: "Ganti PIN transaksi", action: () => setView("pin") },
+            { icon: Smartphone, label: "Autentikasi 2 Faktor", desc: "Aktif - via SMS", toggle: true },
+            { icon: Eye, label: "Biometrik", desc: "Login dengan sidik jari/wajah", toggle: true },
+          ].map((item, i) => (
+            <button
+              key={i}
+              onClick={item.action || undefined}
+              className="glass-card w-full p-4 flex items-center justify-between text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-foreground">{item.label}</p>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
+                </div>
+              </div>
+              {item.toggle ? (
+                <div className="w-12 h-7 rounded-full bg-primary flex items-center px-1">
+                  <div className="w-5 h-5 rounded-full bg-primary-foreground translate-x-5" />
+                </div>
+              ) : (
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="glass-card p-4 space-y-3">
+          <h3 className="font-semibold text-foreground text-sm">Perangkat Aktif</h3>
+          <div className="flex items-center gap-3">
+            <Smartphone className="w-5 h-5 text-neon-green" />
+            <div>
+              <p className="text-sm font-medium text-foreground">Perangkat ini</p>
+              <p className="text-xs text-muted-foreground">Terakhir login: Hari ini</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Undang Teman ───
+  if (view === "invite") {
+    const referralCode = "PSNPAY-RIFKI2026";
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <button onClick={handleBack} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Undang Teman</h2>
+        </div>
+
+        <div className="glass-card p-6 neon-border text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto">
+            <Gift className="w-8 h-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-bold text-foreground">Ajak Teman, Dapat Bonus!</h3>
+          <p className="text-sm text-muted-foreground">Undang teman pakai kode referral dan dapatkan bonus saldo untuk setiap teman yang bergabung.</p>
+        </div>
+
+        <div className="glass-card p-4 space-y-3">
+          <p className="text-xs text-muted-foreground font-medium">Kode Referral Anda</p>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 p-3 rounded-2xl bg-secondary border border-border text-foreground font-bold text-center tracking-widest">
+              {referralCode}
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard?.writeText(referralCode);
+                toast({ title: "Kode referral disalin! 📋" });
+              }}
+              className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground"
+            >
+              <Copy className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        <button
+          onClick={() => {
+            if (navigator.share) {
+              navigator.share({ title: "PSNPAY", text: `Gabung PSNPAY pakai kode referral saya: ${referralCode}` });
+            } else {
+              toast({ title: "Link dibagikan! 🔗" });
+            }
+          }}
+          className="w-full py-3.5 rounded-2xl gradient-neon-bg text-primary-foreground font-semibold flex items-center justify-center gap-2"
+        >
+          <Share2 className="w-4 h-4" /> Bagikan ke Teman
+        </button>
+
+        <div className="glass-card p-4 space-y-3">
+          <h3 className="font-semibold text-foreground text-sm">Statistik Referral</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="glass-card p-3 text-center">
+              <p className="text-2xl font-bold neon-text">3</p>
+              <p className="text-xs text-muted-foreground">Teman Terdaftar</p>
+            </div>
+            <div className="glass-card p-3 text-center">
+              <p className="text-2xl font-bold text-neon-green">Rp 15.000</p>
+              <p className="text-xs text-muted-foreground">Total Bonus</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Pusat Bantuan ───
+  if (view === "help") {
+    const faqs = [
+      { q: "Bagaimana cara top up saldo?", a: "Buka menu Home, pilih Top Up, lalu pilih metode pembayaran yang tersedia." },
+      { q: "Bagaimana cara transfer ke bank?", a: "Pilih menu Transfer, masukkan nomor rekening tujuan dan nominal transfer." },
+      { q: "Berapa lama proses KYC?", a: "Proses verifikasi KYC membutuhkan 1-3 hari kerja setelah pengajuan." },
+      { q: "Bagaimana jika lupa PIN?", a: "Hubungi admin melalui fitur Chat Bot Admin untuk reset PIN." },
+    ];
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <button onClick={handleBack} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Pusat Bantuan</h2>
+        </div>
+
+        <div className="glass-card p-4 flex items-center gap-3">
+          <Search className="w-5 h-5 text-muted-foreground" />
+          <input placeholder="Cari pertanyaan..." className="flex-1 bg-transparent text-foreground text-sm outline-none placeholder:text-muted-foreground" />
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-foreground mb-3">FAQ</h3>
+          <div className="space-y-2">
+            {faqs.map((faq, i) => (
+              <details key={i} className="glass-card p-4 group">
+                <summary className="flex items-center justify-between cursor-pointer list-none">
+                  <p className="font-medium text-sm text-foreground pr-4">{faq.q}</p>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 transition-transform group-open:rotate-90" />
+                </summary>
+                <p className="text-sm text-muted-foreground mt-3 pt-3 border-t border-border">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card p-4 space-y-3">
+          <h3 className="font-semibold text-foreground text-sm">Hubungi Kami</h3>
+          <button onClick={() => setView("chatbot")} className="w-full p-3 rounded-2xl bg-secondary flex items-center gap-3 text-left hover:bg-accent transition-colors">
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <div>
+              <p className="text-sm font-medium text-foreground">Chat Bot Admin</p>
+              <p className="text-xs text-muted-foreground">Respon cepat 24/7</p>
+            </div>
+          </button>
+          <a href="mailto:support@psnpay.com" className="w-full p-3 rounded-2xl bg-secondary flex items-center gap-3 text-left hover:bg-accent transition-colors">
+            <Send className="w-5 h-5 text-neon-green" />
+            <div>
+              <p className="text-sm font-medium text-foreground">Email Support</p>
+              <p className="text-xs text-muted-foreground">support@psnpay.com</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Chat Bot Admin ───
+  if (view === "chatbot") {
+    const botResponses: Record<string, string> = {
+      "saldo": "Untuk cek saldo, buka menu Dompet di tab bawah. Saldo akan ditampilkan di bagian atas.",
+      "transfer": "Untuk transfer, buka menu Home → Transfer → Masukkan rekening tujuan dan nominal.",
+      "kyc": "Untuk verifikasi KYC, buka Akun → KYC & Menjadi Mitra → Ikuti langkah-langkahnya.",
+      "pin": "Untuk ubah PIN, buka Akun → PIN. PIN demo: 123456.",
+      "mitra": "Untuk menjadi mitra, selesaikan proses KYC terlebih dahulu di menu Akun.",
+    };
+
+    const handleSendChat = () => {
+      if (!chatInput.trim()) return;
+      const userMsg = chatInput.trim();
+      setChatMessages(prev => [...prev, { from: "user" as const, text: userMsg }]);
+      setChatInput("");
+      
+      setTimeout(() => {
+        const key = Object.keys(botResponses).find(k => userMsg.toLowerCase().includes(k));
+        const reply = key ? botResponses[key] : "Terima kasih atas pertanyaannya. Tim kami akan segera menghubungi Anda. Untuk bantuan lebih lanjut, kunjungi lumadex.io 🌐";
+        setChatMessages(prev => [...prev, { from: "bot" as const, text: reply }]);
+      }, 800);
+    };
+
+    return (
+      <div className="flex flex-col h-screen max-h-screen">
+        <div className="px-4 pt-6 pb-3 flex items-center gap-3 border-b border-border">
+          <button onClick={() => setView("main")} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+            <ArrowLeft className="w-5 h-5 text-foreground" />
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <MessageCircle className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-foreground">Chat Bot Admin</h2>
+              <p className="text-xs text-neon-green">● Online</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-28">
+          {chatMessages.map((msg, i) => (
+            <div key={i} className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${
+                msg.from === "user"
+                  ? "gradient-neon-bg text-primary-foreground rounded-br-md"
+                  : "bg-secondary text-foreground rounded-bl-md"
+              }`}>
+                {msg.text}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border bg-background">
+          <div className="flex items-center gap-2 max-w-md mx-auto">
+            <input
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSendChat()}
+              placeholder="Ketik pesan..."
+              className="flex-1 p-3 rounded-2xl bg-secondary border border-border text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+            <button
+              onClick={handleSendChat}
+              disabled={!chatInput.trim()}
+              className="w-12 h-12 rounded-2xl gradient-neon-bg flex items-center justify-center text-primary-foreground disabled:opacity-50"
+            >
+              <Send className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ─── Main Account Screen ───
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
@@ -699,6 +1031,42 @@ export default function AccountScreen({ onNavigate }: AccountScreenProps) {
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Menu Lainnya */}
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">Lainnya</h3>
+        <div className="space-y-2">
+          {[
+            { icon: Settings, label: "Pengaturan Umum", desc: "Notifikasi, bahasa, tampilan", color: "text-primary", action: () => setView("general-settings") },
+            { icon: ShieldCheck, label: "Keamanan Akun", desc: "Password, PIN, 2FA", color: "text-neon-green", action: () => setView("security") },
+            { icon: Users, label: "Undang Teman", desc: "Dapatkan bonus referral", color: "text-neon-orange", action: () => setView("invite") },
+            { icon: HelpCircle, label: "Pusat Bantuan", desc: "FAQ & bantuan lainnya", color: "text-neon-purple", action: () => setView("help") },
+            { icon: MessageCircle, label: "Chat Bot Admin", desc: "Tanya langsung ke admin", color: "text-neon-cyan", action: () => setView("chatbot") },
+            { icon: Globe, label: "Lumadex Website", desc: "lumadex.io", color: "text-primary", action: () => window.open("https://lumadex.io", "_blank") },
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={item.action}
+              className="glass-card-hover w-full p-4 flex items-center justify-between text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+                  <item.icon className={`w-5 h-5 ${item.color}`} />
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-foreground">{item.label}</p>
+                  <p className="text-xs text-muted-foreground">{item.desc}</p>
+                </div>
+              </div>
+              {item.label === "Lumadex Website" ? (
+                <ExternalLink className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              )}
             </button>
           ))}
         </div>
