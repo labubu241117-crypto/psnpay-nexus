@@ -128,37 +128,6 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
         <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-primary/5 -mr-8 -mt-8 blur-xl" />
       </div>
 
-      {/* Aset Kripto Preview */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-foreground">Aset Kripto</h3>
-          <button className="text-xs text-primary font-medium" onClick={() => onNavigate?.("wallet")}>
-            {tokens.length} Token →
-          </button>
-        </div>
-        <div className="space-y-2">
-          {tokens.map((token) => (
-            <div key={token.symbol} className="glass-card-hover p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center font-bold text-sm text-primary">
-                  {token.symbol.charAt(0)}
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-foreground">{token.name}</p>
-                  <p className="text-xs text-muted-foreground">{token.network}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-semibold text-sm text-foreground">{token.balance}</p>
-                <p className={`text-xs flex items-center justify-end gap-0.5 ${token.up ? "status-success" : "status-failed"}`}>
-                  {token.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                  {token.change}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Mitra UMKM */}
       <div>
