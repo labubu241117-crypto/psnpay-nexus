@@ -51,7 +51,7 @@ export default function MenuScreen({ onBack, onNavigate }: MenuScreenProps) {
   })).filter((cat) => cat.items.length > 0);
 
   const handleItemClick = (serviceId: string) => {
-    if (["transfer", "emoney-service", "simpanan", "checkin"].includes(serviceId)) {
+    if (["transfer", "emoney-service", "simpanan", "checkin", "pulsa"].includes(serviceId)) {
       onNavigate?.(serviceId === "emoney-service" ? "emoney" : serviceId);
     } else {
       onNavigate?.(`service:${serviceId}`);
