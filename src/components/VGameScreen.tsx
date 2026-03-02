@@ -185,20 +185,17 @@ export default function VGameScreen({ onBack }: VGameScreenProps) {
             <button onClick={onBack} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center text-foreground hover:neon-glow transition-all">
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2">
-              <Gamepad2 className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold text-foreground">Voucher Game</h2>
-            </div>
+            <h2 className="text-xl font-bold text-foreground">Voucher Game</h2>
           </div>
         </div>
 
         {/* Search */}
-        <div className="px-4 mb-4">
+        <div className="px-4 mb-5">
           <div className="glass-card p-3 flex items-center gap-3">
             <Search className="w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Cari game..."
+              placeholder="Cari Voucher Game"
               value={searchGame}
               onChange={(e) => setSearchGame(e.target.value)}
               className="bg-transparent flex-1 text-sm text-foreground placeholder:text-muted-foreground outline-none"
@@ -206,25 +203,22 @@ export default function VGameScreen({ onBack }: VGameScreenProps) {
           </div>
         </div>
 
-        {/* Game List */}
-        <div className="px-4 space-y-3">
-          <p className="text-sm font-bold text-muted-foreground">Pilih Game</p>
-          {filteredGames.map((game) => (
-            <button
-              key={game.id}
-              onClick={() => setSelectedGame(game)}
-              className="w-full glass-card p-4 flex items-center gap-4 text-left hover:border-primary/50 transition-all"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center text-2xl">
-                {game.icon}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-foreground">{game.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{game.products.length} produk tersedia</p>
-              </div>
-              <ChevronDown className="w-4 h-4 text-muted-foreground -rotate-90" />
-            </button>
-          ))}
+        <div className="px-4">
+          <p className="text-sm font-bold text-foreground mb-4">Semua Game</p>
+          <div className="grid grid-cols-3 gap-4">
+            {filteredGames.map((game) => (
+              <button
+                key={game.id}
+                onClick={() => setSelectedGame(game)}
+                className="flex flex-col items-center gap-2 group"
+              >
+                <div className="w-full aspect-square rounded-2xl bg-secondary flex items-center justify-center text-4xl group-hover:neon-glow transition-all border border-border group-hover:border-primary/50">
+                  {game.icon}
+                </div>
+                <p className="text-xs font-medium text-foreground text-center leading-tight">{game.name}</p>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -239,10 +233,21 @@ export default function VGameScreen({ onBack }: VGameScreenProps) {
           <button onClick={() => { setSelectedGame(null); setUserId(""); setServerId(""); setSelectedProduct(null); }} className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center text-foreground hover:neon-glow transition-all">
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">{selectedGame.icon}</span>
-            <h2 className="text-xl font-bold text-foreground">{selectedGame.name}</h2>
+          <h2 className="text-xl font-bold text-foreground">Voucher Game</h2>
+        </div>
+      </div>
+
+      {/* Game Info */}
+      <div className="px-4 mb-4">
+        <div className="glass-card p-4 flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center text-3xl shrink-0">
+            {selectedGame.icon}
           </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-foreground">{selectedGame.name}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{selectedGame.products.length} produk</p>
+          </div>
+          <ChevronDown className="w-4 h-4 text-muted-foreground -rotate-90" />
         </div>
       </div>
 
@@ -275,60 +280,50 @@ export default function VGameScreen({ onBack }: VGameScreenProps) {
         )}
       </div>
 
-      {/* Products */}
+      {/* Products - List Style */}
       <div className="px-4 flex-1 overflow-y-auto space-y-3 pb-4">
-        <p className="text-sm font-bold text-muted-foreground">Pilih Item</p>
-        <div className="grid grid-cols-2 gap-3">
-          {selectedGame.products.map((p) => (
-            <button
-              key={p.name}
-              onClick={() => { setSelectedProduct(p.name); setSelectedPrice(p.price); }}
-              className={`p-4 rounded-xl border text-left transition-all relative ${
-                selectedProduct === p.name
-                  ? "border-primary bg-primary/10 neon-glow"
-                  : "border-border bg-card hover:border-primary/50"
-              }`}
-            >
-              {p.popular && (
-                <span className="absolute top-2 right-2 flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
-                  <Star className="w-2.5 h-2.5" /> Popular
-                </span>
-              )}
-              <p className="text-sm font-bold text-foreground pr-12">{p.name}</p>
-              <div className="mt-2">
+        {selectedGame.products.map((p) => (
+          <button
+            key={p.name}
+            onClick={() => { setSelectedProduct(p.name); setSelectedPrice(p.price); }}
+            className={`w-full p-4 rounded-xl border text-left transition-all ${
+              selectedProduct === p.name
+                ? "border-primary bg-primary/10 neon-glow"
+                : "border-border bg-card hover:border-primary/50"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-foreground">{p.name}</p>
+                <p className="text-xs text-muted-foreground mt-1">Lihat Lebih Banyak ▾</p>
+              </div>
+              <div className="text-right">
                 {p.original && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 justify-end">
                     <span className="text-xs text-muted-foreground line-through">Rp{p.original.toLocaleString("id-ID")}</span>
-                    <span className="text-[10px] font-bold text-[hsl(var(--neon-red))]">-{p.discount}%</span>
+                    <span className="text-xs font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">-{p.discount}%</span>
                   </div>
                 )}
-                <p className="text-sm font-bold text-primary">Rp{p.price.toLocaleString("id-ID")}</p>
+                <p className="text-base font-bold text-primary mt-0.5">Rp {p.price.toLocaleString("id-ID")}</p>
               </div>
-            </button>
-          ))}
-        </div>
+            </div>
+          </button>
+        ))}
       </div>
 
       {/* Bottom Bar */}
       <div className="fixed bottom-16 left-0 right-0 max-w-md mx-auto px-4 py-3 bg-background/80 backdrop-blur-xl border-t border-border">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 flex-1">
-            <Tag className="w-4 h-4 text-primary" />
-            <span className="text-sm font-bold text-primary">Gratis Admin</span>
-          </div>
-          <button
-            onClick={() => setShowResult(true)}
-            disabled={!canCheckout}
-            className={`flex-1 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-              canCheckout
-                ? "gradient-neon-bg text-primary-foreground neon-glow-strong hover:scale-[1.02] active:scale-[0.98]"
-                : "bg-secondary text-muted-foreground cursor-not-allowed"
-            }`}
-          >
-            <Send className="w-4 h-4" />
-            Checkout
-          </button>
-        </div>
+        <button
+          onClick={() => setShowResult(true)}
+          disabled={!canCheckout}
+          className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+            canCheckout
+              ? "gradient-neon-bg text-primary-foreground neon-glow-strong hover:scale-[1.02] active:scale-[0.98]"
+              : "bg-secondary text-muted-foreground cursor-not-allowed"
+          }`}
+        >
+          Lanjutkan
+        </button>
       </div>
     </div>
   );
