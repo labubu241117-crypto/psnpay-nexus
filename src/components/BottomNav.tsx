@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { Home, Wallet, QrCode, Activity, User } from "lucide-react";
+import { Home, Wallet, QrCode, FileText, User } from "lucide-react";
 
 const tabs = [
   { id: "home", icon: Home, label: "Home" },
-  { id: "wallet", icon: Wallet, label: "Wallet" },
+  { id: "wallet", icon: Wallet, label: "Dompet" },
   { id: "qr", icon: QrCode, label: "QR" },
-  { id: "activity", icon: Activity, label: "Activity" },
-  { id: "account", icon: User, label: "Account" },
+  { id: "activity", icon: FileText, label: "Aktivitas" },
+  { id: "account", icon: User, label: "Akun" },
 ] as const;
 
 export type TabId = typeof tabs[number]["id"];
