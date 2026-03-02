@@ -4,13 +4,32 @@ import HomeScreen from "@/components/HomeScreen";
 import WalletScreen from "@/components/WalletScreen";
 import ActivityScreen from "@/components/ActivityScreen";
 import AccountScreen from "@/components/AccountScreen";
+import MenuScreen from "@/components/MenuScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  const [showMenu, setShowMenu] = useState(false);
+
+  const handleNavigate = (screen: string) => {
+    if (screen === "menu") {
+      setShowMenu(true);
+    } else if (screen === "wallet") {
+      setActiveTab("wallet");
+    }
+  };
+
+  if (showMenu) {
+    return (
+      <div className="min-h-screen max-w-md mx-auto relative">
+        <MenuScreen onBack={() => setShowMenu(false)} />
+        <BottomNav active={activeTab} onChange={(tab) => { setShowMenu(false); setActiveTab(tab); }} />
+      </div>
+    );
+  }
 
   const renderScreen = () => {
     switch (activeTab) {
-      case "home": return <HomeScreen />;
+      case "home": return <HomeScreen onNavigate={handleNavigate} />;
       case "wallet": return <WalletScreen />;
       case "activity": return <ActivityScreen />;
       case "account": return <AccountScreen />;
@@ -19,10 +38,10 @@ const Index = () => {
           <div className="w-48 h-48 rounded-3xl neon-border glass-card flex items-center justify-center animate-pulse-neon">
             <span className="text-6xl font-bold neon-text">QR</span>
           </div>
-          <p className="text-muted-foreground text-sm">Scan or show QR to pay</p>
+          <p className="text-muted-foreground text-sm">Scan atau tunjukkan QR untuk bayar</p>
         </div>
       );
-      default: return <HomeScreen />;
+      default: return <HomeScreen onNavigate={handleNavigate} />;
     }
   };
 

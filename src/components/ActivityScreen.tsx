@@ -1,62 +1,117 @@
 import { useState } from "react";
-import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight, CreditCard, Store } from "lucide-react";
+import { ShoppingBag, Wallet, FileText, ArrowLeftRight, Package } from "lucide-react";
+import psnpayLogo from "@/assets/psnpay-logo.png";
 
-const tabs = ["All", "Crypto", "Fiat", "Merchant"] as const;
+const tabs = [
+  { id: "produk", label: "Produk", icon: ShoppingBag },
+  { id: "deposit", label: "Deposit", icon: Wallet },
+  { id: "tagihan", label: "Tagihan", icon: FileText },
+  { id: "transfer", label: "Transfer", icon: ArrowLeftRight },
+] as const;
 
-const activities = [
-  { type: "Received", icon: ArrowDownLeft, from: "0x8f3...a2c1", amount: "+0.05 ETH", usd: "+$94.50", time: "2 min ago", status: "success" as const, category: "Crypto" },
-  { type: "Sent", icon: ArrowUpRight, from: "0x4b1...d8e3", amount: "-100 USDT", usd: "-$100.00", time: "1 hour ago", status: "success" as const, category: "Crypto" },
-  { type: "Swap", icon: ArrowLeftRight, from: "ETH → USDT", amount: "0.5 ETH", usd: "$945.00", time: "3 hours ago", status: "pending" as const, category: "Crypto" },
-  { type: "Top Up", icon: CreditCard, from: "Bank Transfer", amount: "+Rp 7,500,000", usd: "+$500.00", time: "Yesterday", status: "success" as const, category: "Fiat" },
-  { type: "Merchant", icon: Store, from: "Tokopedia", amount: "-Rp 150,000", usd: "-$10.00", time: "Yesterday", status: "success" as const, category: "Merchant" },
-  { type: "Sent", icon: ArrowUpRight, from: "0x9c2...f1b4", amount: "-0.1 BTC", usd: "-$6,234.00", time: "2 days ago", status: "failed" as const, category: "Crypto" },
-  { type: "Received", icon: ArrowDownLeft, from: "0xa1f...c3d2", amount: "+500 USDT", usd: "+$500.00", time: "3 days ago", status: "success" as const, category: "Crypto" },
-];
+type TabId = typeof tabs[number]["id"];
 
-const statusLabel = { success: "Success", pending: "Pending", failed: "Failed" };
+const transactions: Record<TabId, Array<{
+  type: string;
+  desc: string;
+  amount: string;
+  time: string;
+  status: "success" | "pending" | "failed";
+}>> = {
+  produk: [],
+  deposit: [
+    { type: "Deposit", desc: "Bank BCA", amount: "+Rp 500.000", time: "2 hari lalu", status: "success" },
+    { type: "Deposit", desc: "Bank Mandiri", amount: "+Rp 1.000.000", time: "5 hari lalu", status: "success" },
+  ],
+  tagihan: [
+    { type: "PLN", desc: "Token Listrik", amount: "-Rp 100.000", time: "1 minggu lalu", status: "success" },
+    { type: "BPJS", desc: "Kesehatan", amount: "-Rp 150.000", time: "2 minggu lalu", status: "pending" },
+  ],
+  transfer: [
+    { type: "Transfer", desc: "0x8f3...a2c1", amount: "-Rp 250.000", time: "Kemarin", status: "success" },
+    { type: "Transfer", desc: "Bank BRI", amount: "-Rp 500.000", time: "3 hari lalu", status: "failed" },
+  ],
+};
+
+const statusLabel = { success: "Berhasil", pending: "Menunggu", failed: "Gagal" };
 
 export default function ActivityScreen() {
-  const [activeTab, setActiveTab] = useState<typeof tabs[number]>("All");
-
-  const filtered = activeTab === "All" ? activities : activities.filter((a) => a.category === activeTab);
+  const [activeTab, setActiveTab] = useState<TabId>("produk");
+  const items = transactions[activeTab];
 
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
-      <h2 className="text-xl font-bold text-foreground">Activity</h2>
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden">
+          <img src={psnpayLogo} alt="Avatar" className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <p className="font-bold text-foreground">Muhamad Rifki</p>
+          <p className="text-xs text-muted-foreground">Riwayat Transaksi</p>
+        </div>
+      </div>
 
-      {/* Filter Chips */}
-      <div className="flex gap-2">
+      {/* Tabs */}
+      <div className="glass-card p-1 flex gap-1">
         {tabs.map((tab) => (
-          <button key={tab} className={`filter-chip ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab)}>
-            {tab}
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 ${
+              activeTab === tab.id
+                ? "gradient-neon-bg text-primary-foreground neon-glow"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Activity List */}
-      <div className="space-y-3">
-        {filtered.map((item, i) => (
-          <div key={i} className="glass-card p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
-                <item.icon className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-semibold text-sm text-foreground">{item.type}</p>
-                <p className="text-xs text-muted-foreground">{item.from}</p>
-              </div>
+      {/* Content */}
+      <div>
+        <h3 className="font-semibold text-foreground mb-3">
+          Transaksi {tabs.find((t) => t.id === activeTab)?.label}
+        </h3>
+
+        {items.length === 0 ? (
+          <div className="glass-card p-12 flex flex-col items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-4">
+              <Package className="w-10 h-10 text-muted-foreground" />
             </div>
-            <div className="text-right">
-              <p className={`font-semibold text-sm ${item.amount.startsWith("+") ? "status-success" : item.status === "failed" ? "status-failed" : "text-foreground"}`}>
-                {item.amount}
-              </p>
-              <p className="text-xs text-muted-foreground">{item.time}</p>
-              <span className={`text-[10px] font-medium status-${item.status}`}>
-                {statusLabel[item.status]}
-              </span>
-            </div>
+            <p className="font-medium text-foreground">Tidak ada transaksi produk</p>
+            <p className="text-sm text-muted-foreground mt-1">Belum ada transaksi yang tercatat</p>
           </div>
-        ))}
+        ) : (
+          <div className="space-y-3">
+            {items.map((item, i) => (
+              <div key={i} className="glass-card p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${
+                    item.status === "success" ? "bg-neon-green" : item.status === "pending" ? "bg-neon-orange" : "bg-neon-red"
+                  }`} />
+                  <div>
+                    <p className="font-medium text-sm text-foreground">{item.type}</p>
+                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={`font-semibold text-sm ${
+                    item.amount.startsWith("+") ? "status-success" : "text-foreground"
+                  }`}>
+                    {item.amount}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{item.time}</p>
+                  <span className={`text-[10px] font-medium status-${item.status}`}>
+                    {statusLabel[item.status]}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
