@@ -1,17 +1,9 @@
 import { useState } from "react";
 import { ShoppingBag, Wallet, FileText, ArrowLeftRight, Package, Filter, Calendar } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
+import { useI18n } from "@/lib/i18n";
 
-const tabs = [
-  { id: "produk", label: "Produk", icon: ShoppingBag },
-  { id: "deposit", label: "Deposit", icon: Wallet },
-  { id: "tagihan", label: "Tagihan", icon: FileText },
-  { id: "transfer", label: "Transfer", icon: ArrowLeftRight },
-] as const;
-
-type TabId = typeof tabs[number]["id"];
-
-const transactions: Record<TabId, Array<{
+const transactions: Record<string, Array<{
   type: string;
   desc: string;
   amount: string;
@@ -45,22 +37,36 @@ const transactions: Record<TabId, Array<{
   ],
 };
 
-const statusLabel = { success: "Berhasil", pending: "Menunggu", failed: "Gagal" };
 const statusDotColor = {
   success: "bg-[hsl(var(--neon-green))]",
   pending: "bg-[hsl(var(--neon-orange))]",
   failed: "bg-[hsl(var(--neon-red))]",
 };
 
+type TabId = "produk" | "deposit" | "tagihan" | "transfer";
+
 export default function ActivityScreen() {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<TabId>("produk");
   const items = transactions[activeTab];
+
+  const tabs = [
+    { id: "produk" as TabId, label: t("activity.product"), icon: ShoppingBag },
+    { id: "deposit" as TabId, label: t("activity.deposit"), icon: Wallet },
+    { id: "tagihan" as TabId, label: t("activity.bills"), icon: FileText },
+    { id: "transfer" as TabId, label: t("activity.transferTab"), icon: ArrowLeftRight },
+  ];
+
+  const statusLabel = {
+    success: t("activity.success"),
+    pending: t("activity.pending"),
+    failed: t("activity.failed"),
+  };
 
   const totalItems = Object.values(transactions).flat().length;
 
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden">
@@ -68,7 +74,7 @@ export default function ActivityScreen() {
           </div>
           <div>
             <p className="font-bold text-foreground">Muhamad Rifki</p>
-            <p className="text-xs text-muted-foreground">Riwayat Transaksi</p>
+            <p className="text-xs text-muted-foreground">{t("activity.history")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -81,44 +87,42 @@ export default function ActivityScreen() {
         </div>
       </div>
 
-      {/* Summary */}
       <div className="glass-card p-4 neon-border flex items-center justify-between">
         <div>
-          <p className="text-xs text-muted-foreground">Total Transaksi</p>
+          <p className="text-xs text-muted-foreground">{t("activity.total")}</p>
           <p className="text-2xl font-bold text-foreground">{totalItems}</p>
         </div>
         <div className="flex gap-4">
           <div className="text-center">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[hsl(var(--neon-green))]" />
-              <span className="text-xs text-muted-foreground">Berhasil</span>
+              <span className="text-xs text-muted-foreground">{t("activity.success")}</span>
             </div>
             <p className="text-sm font-bold text-foreground mt-0.5">
-              {Object.values(transactions).flat().filter(t => t.status === "success").length}
+              {Object.values(transactions).flat().filter(tx => tx.status === "success").length}
             </p>
           </div>
           <div className="text-center">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[hsl(var(--neon-orange))]" />
-              <span className="text-xs text-muted-foreground">Pending</span>
+              <span className="text-xs text-muted-foreground">{t("activity.pending")}</span>
             </div>
             <p className="text-sm font-bold text-foreground mt-0.5">
-              {Object.values(transactions).flat().filter(t => t.status === "pending").length}
+              {Object.values(transactions).flat().filter(tx => tx.status === "pending").length}
             </p>
           </div>
           <div className="text-center">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-[hsl(var(--neon-red))]" />
-              <span className="text-xs text-muted-foreground">Gagal</span>
+              <span className="text-xs text-muted-foreground">{t("activity.failed")}</span>
             </div>
             <p className="text-sm font-bold text-foreground mt-0.5">
-              {Object.values(transactions).flat().filter(t => t.status === "failed").length}
+              {Object.values(transactions).flat().filter(tx => tx.status === "failed").length}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="glass-card p-1 flex gap-1">
         {tabs.map((tab) => (
           <button
@@ -136,13 +140,12 @@ export default function ActivityScreen() {
         ))}
       </div>
 
-      {/* Content */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-foreground">
-            Transaksi {tabs.find((t) => t.id === activeTab)?.label}
+            {tabs.find((tt) => tt.id === activeTab)?.label}
           </h3>
-          <span className="text-xs text-muted-foreground">{items.length} transaksi</span>
+          <span className="text-xs text-muted-foreground">{items.length} {t("activity.transactions")}</span>
         </div>
 
         {items.length === 0 ? (
@@ -150,8 +153,8 @@ export default function ActivityScreen() {
             <div className="w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-4">
               <Package className="w-10 h-10 text-muted-foreground" />
             </div>
-            <p className="font-medium text-foreground">Tidak ada transaksi</p>
-            <p className="text-sm text-muted-foreground mt-1">Belum ada transaksi yang tercatat</p>
+            <p className="font-medium text-foreground">{t("activity.noTransaction")}</p>
+            <p className="text-sm text-muted-foreground mt-1">{t("activity.noTransactionDesc")}</p>
           </div>
         ) : (
           <div className="space-y-3">
