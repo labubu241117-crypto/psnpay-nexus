@@ -39,9 +39,10 @@ const categories = [
 
 interface MenuScreenProps {
   onBack: () => void;
+  onNavigate?: (screen: string) => void;
 }
 
-export default function MenuScreen({ onBack }: MenuScreenProps) {
+export default function MenuScreen({ onBack, onNavigate }: MenuScreenProps) {
   const [search, setSearch] = useState("");
 
   const filteredCategories = categories.map((cat) => ({
@@ -80,7 +81,9 @@ export default function MenuScreen({ onBack }: MenuScreenProps) {
           </div>
           <div className="grid grid-cols-4 gap-3">
             {cat.items.map((item) => (
-              <button key={item.label} className="action-button group">
+              <button key={item.label} className="action-button group" onClick={() => {
+                if (item.label === "Transfer") onNavigate?.("transfer");
+              }}>
                 <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center transition-all group-hover:neon-glow">
                   <item.icon className="w-5 h-5 text-primary" />
                 </div>

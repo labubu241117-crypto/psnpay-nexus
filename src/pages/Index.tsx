@@ -5,24 +5,26 @@ import WalletScreen from "@/components/WalletScreen";
 import ActivityScreen from "@/components/ActivityScreen";
 import AccountScreen from "@/components/AccountScreen";
 import MenuScreen from "@/components/MenuScreen";
+import TransferScreen from "@/components/TransferScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
-  const [showMenu, setShowMenu] = useState(false);
+  const [overlay, setOverlay] = useState<string | null>(null);
 
   const handleNavigate = (screen: string) => {
-    if (screen === "menu") {
-      setShowMenu(true);
+    if (screen === "menu" || screen === "transfer") {
+      setOverlay(screen);
     } else if (screen === "wallet") {
       setActiveTab("wallet");
     }
   };
 
-  if (showMenu) {
+  if (overlay) {
     return (
       <div className="min-h-screen max-w-md mx-auto relative">
-        <MenuScreen onBack={() => setShowMenu(false)} />
-        <BottomNav active={activeTab} onChange={(tab) => { setShowMenu(false); setActiveTab(tab); }} />
+        {overlay === "menu" && <MenuScreen onBack={() => setOverlay(null)} onNavigate={(s) => setOverlay(s)} />}
+        {overlay === "transfer" && <TransferScreen onBack={() => setOverlay(null)} />}
+        <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
     );
   }
