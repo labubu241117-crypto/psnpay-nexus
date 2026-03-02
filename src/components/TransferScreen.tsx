@@ -15,6 +15,7 @@ export default function TransferScreen({ onBack }: TransferScreenProps) {
   const [jumlah, setJumlah] = useState("");
   const [tujuan, setTujuan] = useState("");
   const [keterangan, setKeterangan] = useState("");
+  const [saldoVisible, setSaldoVisible] = useState(true);
 
   const isValid = bank && noRekening.length >= 8 && jumlah && tujuan;
 
@@ -45,9 +46,14 @@ export default function TransferScreen({ onBack }: TransferScreenProps) {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Saldo Tersedia</p>
-            <p className="text-lg font-bold text-foreground">Rp 1.250.000</p>
+            <p className="text-lg font-bold text-foreground">
+              {saldoVisible ? "Rp 1.250.000" : "••••••••"}
+            </p>
           </div>
         </div>
+        <button onClick={() => setSaldoVisible(!saldoVisible)} className="text-muted-foreground hover:text-foreground transition-colors">
+          {saldoVisible ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+        </button>
       </div>
 
       {/* Form */}
