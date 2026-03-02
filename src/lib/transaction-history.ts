@@ -35,3 +35,17 @@ export function addTransaction(tx: Omit<Transaction, "id" | "timestamp" | "statu
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all.slice(0, 200)));
   return newTx;
 }
+
+export function deleteTransaction(id: string): void {
+  const all = getTransactions().filter((t) => t.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}
+
+export function clearTransactionsByService(serviceId: string): void {
+  const all = getTransactions().filter((t) => t.serviceId !== serviceId);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+}
+
+export function clearAllTransactions(): void {
+  localStorage.removeItem(STORAGE_KEY);
+}
