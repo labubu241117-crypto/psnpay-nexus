@@ -16,6 +16,7 @@ import PulsaScreen from "@/components/PulsaScreen";
 import TokenPlnScreen from "@/components/TokenPlnScreen";
 import PaketDataScreen from "@/components/PaketDataScreen";
 import VGameScreen from "@/components/VGameScreen";
+import MutasiScreen from "@/components/MutasiScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
@@ -45,6 +46,7 @@ const Index = () => {
         {overlay === "token-pln" && <TokenPlnScreen onBack={() => setOverlay("menu")} />}
         {overlay === "paket-data" && <PaketDataScreen onBack={() => setOverlay("menu")} />}
         {overlay === "vgame" && <VGameScreen onBack={() => setOverlay("menu")} />}
+        {overlay === "mutasi" && <MutasiScreen onBack={() => setOverlay(null)} />}
         {isService && serviceId && <ServiceScreen serviceId={serviceId} onBack={() => setOverlay("menu")} />}
         <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
@@ -56,7 +58,7 @@ const Index = () => {
       case "home": return <HomeScreen onNavigate={handleNavigate} />;
       case "wallet": return <WalletScreen />;
       case "activity": return <ActivityScreen />;
-      case "account": return <AccountScreen />;
+      case "account": return <AccountScreen onNavigate={handleNavigate} />;
       case "qr": return <QrScreen />;
       default: return <HomeScreen onNavigate={handleNavigate} />;
     }
