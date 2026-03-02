@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ArrowLeft, Wallet, Eye, EyeOff, Coins, DollarSign, CreditCard, QrCode, Store, Send } from "lucide-react";
 import TransferBankDetail from "@/components/TransferBankDetail";
 import MitraDetail from "@/components/MitraDetail";
+import QrisDetail from "@/components/QrisDetail";
 
 const currencies = [
   { code: "IDR", label: "Rupiah (IDR)", symbol: "Rp" },
@@ -39,6 +40,7 @@ export default function TopUpScreen({ onBack }: TopUpScreenProps) {
   const [saldoVisible, setSaldoVisible] = useState(true);
   const [showBankDetail, setShowBankDetail] = useState(false);
   const [showMitraDetail, setShowMitraDetail] = useState(false);
+  const [showQrisDetail, setShowQrisDetail] = useState(false);
 
   const currentCurrency = currencies.find((c) => c.code === currency)!;
   const presets = nominalPresets[currency] || nominalPresets.IDR;
@@ -65,7 +67,10 @@ export default function TopUpScreen({ onBack }: TopUpScreenProps) {
       setShowMitraDetail(true);
       return;
     }
-    alert(`Top Up ${currentCurrency.symbol}${parseInt(nominal).toLocaleString("id-ID")} via ${paymentMethods.find(p => p.id === paymentMethod)?.label}`);
+    if (paymentMethod === "qris") {
+      setShowQrisDetail(true);
+      return;
+    }
   };
 
   if (showBankDetail) {
@@ -82,6 +87,16 @@ export default function TopUpScreen({ onBack }: TopUpScreenProps) {
     return (
       <MitraDetail
         onBack={() => setShowMitraDetail(false)}
+        nominal={nominal}
+        currencySymbol={currentCurrency.symbol}
+      />
+    );
+  }
+
+  if (showQrisDetail) {
+    return (
+      <QrisDetail
+        onBack={() => setShowQrisDetail(false)}
         nominal={nominal}
         currencySymbol={currentCurrency.symbol}
       />
