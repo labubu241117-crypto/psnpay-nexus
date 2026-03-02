@@ -488,7 +488,12 @@ export default function ServiceScreen({ serviceId, onBack }: ServiceScreenProps)
       )}
 
       {/* Transaction History */}
-      {history.length > 0 && <TransactionHistory transactions={history} />}
+      {history.length > 0 && (
+        <TransactionHistory
+          transactions={history}
+          onUpdate={() => setHistory(getTransactionsByService(serviceId))}
+        />
+      )}
 
       {/* Submit */}
       <button
