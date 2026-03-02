@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { QrCode, Flashlight, Image, Copy, Check, Share2, Download, RefreshCw } from "lucide-react";
-
-const tabs = [
-  { id: "scan", label: "Scan QR" },
-  { id: "myqr", label: "QR Saya" },
-] as const;
-
-type TabId = typeof tabs[number]["id"];
+import { useI18n } from "@/lib/i18n";
 
 export default function QrScreen() {
-  const [activeTab, setActiveTab] = useState<TabId>("scan");
+  const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState<"scan" | "myqr">("scan");
   const [flashOn, setFlashOn] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -24,15 +19,16 @@ export default function QrScreen() {
 
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
-      {/* Header */}
       <div className="text-center">
-        <h2 className="text-xl font-bold text-foreground">QRIS Payment</h2>
-        <p className="text-sm text-muted-foreground mt-1">Scan atau tunjukkan QR untuk transaksi</p>
+        <h2 className="text-xl font-bold text-foreground">{t("qr.title")}</h2>
+        <p className="text-sm text-muted-foreground mt-1">{t("qr.subtitle")}</p>
       </div>
 
-      {/* Tabs */}
       <div className="glass-card p-1 flex gap-1">
-        {tabs.map((tab) => (
+        {[
+          { id: "scan" as const, label: t("qr.scanQr") },
+          { id: "myqr" as const, label: t("qr.myQr") },
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -49,54 +45,41 @@ export default function QrScreen() {
 
       {activeTab === "scan" ? (
         <>
-          {/* Scanner Area */}
           <div className="relative aspect-square max-w-[280px] mx-auto">
             <div className="w-full h-full rounded-3xl neon-border glass-card flex items-center justify-center overflow-hidden relative">
-              {/* Scanner overlay corners */}
               <div className="absolute inset-4">
                 <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary rounded-tl-lg" />
                 <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-primary rounded-tr-lg" />
                 <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary rounded-bl-lg" />
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary rounded-br-lg" />
               </div>
-
-              {/* Scan line animation */}
               <div className="absolute inset-x-6 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent animate-scan" />
-
               <div className="flex flex-col items-center gap-3">
                 <QrCode className="w-16 h-16 text-muted-foreground/30" />
-                <p className="text-xs text-muted-foreground">Arahkan kamera ke QR Code</p>
+                <p className="text-xs text-muted-foreground">{t("qr.pointCamera")}</p>
               </div>
             </div>
           </div>
 
-          {/* Scanner Controls */}
           <div className="flex justify-center gap-6">
-            <button
-              onClick={() => setFlashOn(!flashOn)}
-              className={`flex flex-col items-center gap-2 group`}
-            >
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
-                flashOn ? "gradient-neon-bg neon-glow" : "bg-secondary"
-              }`}>
+            <button onClick={() => setFlashOn(!flashOn)} className="flex flex-col items-center gap-2 group">
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${flashOn ? "gradient-neon-bg neon-glow" : "bg-secondary"}`}>
                 <Flashlight className={`w-6 h-6 ${flashOn ? "text-primary-foreground" : "text-primary"}`} />
               </div>
-              <span className="text-xs text-muted-foreground">Flash</span>
+              <span className="text-xs text-muted-foreground">{t("qr.flash")}</span>
             </button>
-
             <button className="flex flex-col items-center gap-2 group">
               <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center transition-all group-hover:neon-glow">
                 <Image className="w-6 h-6 text-primary" />
               </div>
-              <span className="text-xs text-muted-foreground">Galeri</span>
+              <span className="text-xs text-muted-foreground">{t("qr.gallery")}</span>
             </button>
           </div>
 
-          {/* Info */}
           <div className="glass-card p-4 space-y-2">
-            <p className="text-sm font-bold text-foreground">Cara Pembayaran QRIS</p>
+            <p className="text-sm font-bold text-foreground">{t("qr.howToPay")}</p>
             <div className="space-y-2">
-              {["Arahkan kamera ke QR merchant", "Periksa detail pembayaran", "Masukkan nominal & konfirmasi", "Transaksi selesai!"].map((step, i) => (
+              {[t("qr.step1"), t("qr.step2"), t("qr.step3"), t("qr.step4")].map((step, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0 mt-0.5">
                     <span className="text-xs font-bold text-primary">{i + 1}</span>
@@ -109,7 +92,6 @@ export default function QrScreen() {
         </>
       ) : (
         <>
-          {/* My QR Code */}
           <div className="flex flex-col items-center space-y-4">
             <div className="w-64 h-64 rounded-3xl neon-border glass-card flex items-center justify-center animate-pulse-neon p-6">
               <div className="w-full h-full rounded-2xl bg-foreground/90 flex items-center justify-center relative">
@@ -121,16 +103,14 @@ export default function QrScreen() {
                 </div>
               </div>
             </div>
-
             <div className="text-center">
               <p className="text-lg font-bold text-foreground">Muhamad Rifki</p>
               <p className="text-sm text-muted-foreground mt-1">PSNPAY Wallet</p>
             </div>
           </div>
 
-          {/* Wallet Address */}
           <div className="glass-card p-4 neon-border">
-            <p className="text-xs text-muted-foreground mb-2">Alamat Wallet</p>
+            <p className="text-xs text-muted-foreground mb-2">{t("qr.walletAddress")}</p>
             <div className="flex items-center justify-between">
               <p className="text-sm font-mono text-foreground">{walletAddress}</p>
               <button onClick={handleCopy} className="text-primary hover:text-foreground transition-colors">
@@ -139,12 +119,11 @@ export default function QrScreen() {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { icon: Share2, label: "Bagikan" },
-              { icon: Download, label: "Simpan" },
-              { icon: RefreshCw, label: "Refresh" },
+              { icon: Share2, label: t("qr.share") },
+              { icon: Download, label: t("qr.save") },
+              { icon: RefreshCw, label: t("qr.refresh") },
             ].map((action) => (
               <button key={action.label} className="glass-card-hover p-4 flex flex-col items-center gap-2">
                 <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
@@ -155,9 +134,8 @@ export default function QrScreen() {
             ))}
           </div>
 
-          {/* Recent Received */}
           <div>
-            <h3 className="font-semibold text-foreground mb-3">Terakhir Diterima</h3>
+            <h3 className="font-semibold text-foreground mb-3">{t("qr.recentReceived")}</h3>
             <div className="space-y-2">
               {[
                 { name: "Ahmad S.", amount: "+Rp 50.000", time: "2 jam lalu" },
