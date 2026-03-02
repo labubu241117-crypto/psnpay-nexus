@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, CreditCard, Wifi, Info, Contact, ChevronRight, RefreshCw, DollarSign, Send } from "lucide-react";
+import { ArrowLeft, CreditCard, Wifi, Info, Contact, ChevronRight, RefreshCw, DollarSign, Send, CheckCircle2, Shield, Clock, Copy, Check } from "lucide-react";
 
 const providers = [
   { id: "emandiri", name: "EMoney Mandiri", code: "EMONEYMDR", initial: "P", color: "bg-primary/20 text-primary" },
@@ -17,6 +17,9 @@ export default function EMoneyScreen({ onBack }: EMoneyScreenProps) {
   const [selectedProvider, setSelectedProvider] = useState<typeof providers[0] | null>(null);
   const [selectedNominal, setSelectedNominal] = useState<number | null>(null);
   const [customNominal, setCustomNominal] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [paymentDone, setPaymentDone] = useState(false);
+  const [copiedTrx, setCopiedTrx] = useState(false);
 
   const formatCard = (val: string) => {
     const digits = val.replace(/\D/g, "").slice(0, 16);
@@ -28,8 +31,178 @@ export default function EMoneyScreen({ onBack }: EMoneyScreenProps) {
 
   const handleSubmit = () => {
     if (!isValid) return;
-    alert(`Top Up ${selectedProvider?.name} - Rp ${finalNominal.toLocaleString("id-ID")}`);
+    setShowConfirm(true);
   };
+
+  const trxId = `TRX${Date.now().toString().slice(-10)}`;
+  const trxDate = new Date().toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short" });
+
+  const handleConfirmPay = () => {
+    setPaymentDone(true);
+  };
+
+  const handleCopyTrx = () => {
+    navigator.clipboard.writeText(trxId);
+    setCopiedTrx(true);
+    setTimeout(() => setCopiedTrx(false), 2000);
+  };
+
+  const handleDone = () => {
+    setSelectedProvider(null);
+    setSelectedNominal(null);
+    setCustomNominal("");
+    setShowConfirm(false);
+    setPaymentDone(false);
+  };
+
+  // Payment Success Screen
+  if (paymentDone && selectedProvider) {
+    return (
+      <div className="px-4 pb-28 pt-6 flex flex-col items-center space-y-6">
+        <div className="w-20 h-20 rounded-full bg-[hsl(var(--neon-green)/0.15)] flex items-center justify-center mt-8 animate-counter">
+          <CheckCircle2 className="w-12 h-12 text-[hsl(var(--neon-green))]" />
+        </div>
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-foreground">Pembayaran Berhasil!</h2>
+          <p className="text-sm text-muted-foreground mt-1">Top up e-money kamu sedang diproses</p>
+        </div>
+
+        <div className="w-full glass-card p-5 neon-border space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Provider</p>
+            <p className="text-sm font-bold text-foreground">{selectedProvider.name}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Nominal</p>
+            <p className="text-sm font-bold neon-text">Rp {finalNominal.toLocaleString("id-ID")}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Biaya Admin</p>
+            <p className="text-sm font-bold text-[hsl(var(--neon-green))]">Gratis</p>
+          </div>
+          <div className="border-t border-border" />
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Total Bayar</p>
+            <p className="text-lg font-bold neon-text">Rp {finalNominal.toLocaleString("id-ID")}</p>
+          </div>
+          <div className="border-t border-border" />
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">ID Transaksi</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-mono text-foreground">{trxId}</p>
+              <button onClick={handleCopyTrx} className="text-primary hover:text-foreground transition-colors">
+                {copiedTrx ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Waktu</p>
+            <p className="text-xs text-foreground">{trxDate}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Status</p>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[hsl(var(--neon-green)/0.15)] status-success">Berhasil</span>
+          </div>
+        </div>
+
+        <button
+          onClick={handleDone}
+          className="w-full py-4 rounded-2xl gradient-neon-bg text-primary-foreground font-bold text-sm neon-glow-strong hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+        >
+          Kembali ke Beranda
+        </button>
+      </div>
+    );
+  }
+
+  // Confirmation Screen
+  if (showConfirm && selectedProvider) {
+    return (
+      <div className="px-4 pb-28 pt-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center text-foreground hover:neon-glow transition-all"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h2 className="text-xl font-bold text-foreground">Konfirmasi Pembayaran</h2>
+        </div>
+
+        {/* Provider Info */}
+        <div className="glass-card p-4 flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-full ${selectedProvider.color} flex items-center justify-center text-lg font-bold`}>
+            {selectedProvider.initial}
+          </div>
+          <div>
+            <p className="text-sm font-bold text-foreground">{selectedProvider.name}</p>
+            <p className="text-xs text-muted-foreground">{selectedProvider.code}</p>
+          </div>
+        </div>
+
+        {/* Detail */}
+        <div className="glass-card p-5 neon-border space-y-3">
+          <p className="text-sm font-bold text-foreground mb-2">Detail Transaksi</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Jenis Transaksi</p>
+            <p className="text-sm font-medium text-foreground">Top Up E-Money</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Provider</p>
+            <p className="text-sm font-medium text-foreground">{selectedProvider.name}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Nominal Top Up</p>
+            <p className="text-sm font-bold text-foreground">Rp {finalNominal.toLocaleString("id-ID")}</p>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">Biaya Admin</p>
+            <p className="text-sm font-bold text-[hsl(var(--neon-green))]">Gratis</p>
+          </div>
+          <div className="border-t border-border my-1" />
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-foreground">Total Pembayaran</p>
+            <p className="text-xl font-bold neon-text">Rp {finalNominal.toLocaleString("id-ID")}</p>
+          </div>
+        </div>
+
+        {/* Sumber Dana */}
+        <div className="glass-card p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
+            <CreditCard className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="text-xs text-muted-foreground">Sumber Dana</p>
+            <p className="text-sm font-bold text-foreground">Saldo PSNPAY — Rp 1.250.000</p>
+          </div>
+        </div>
+
+        {/* Security Note */}
+        <div className="flex items-center gap-2 px-1">
+          <Shield className="w-4 h-4 text-primary flex-shrink-0" />
+          <p className="text-[10px] text-muted-foreground">Transaksi ini dilindungi enkripsi end-to-end</p>
+        </div>
+
+        {/* Buttons */}
+        <div className="space-y-3">
+          <button
+            onClick={handleConfirmPay}
+            className="w-full py-4 rounded-2xl gradient-neon-bg text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 neon-glow-strong hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+          >
+            <Send className="w-5 h-5" />
+            Konfirmasi & Bayar
+          </button>
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="w-full py-3 rounded-2xl bg-secondary text-muted-foreground font-semibold text-sm hover:bg-muted transition-all"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Top Up Nominal Screen
   if (selectedProvider) {
