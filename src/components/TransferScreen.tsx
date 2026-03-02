@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Building2, Hash, DollarSign, FileText, AlignLeft, Send } from "lucide-react";
+import { ArrowLeft, Building2, Hash, DollarSign, FileText, AlignLeft, Send, Wallet, Eye, EyeOff } from "lucide-react";
 
 const bankList = [
   "BCA", "BNI", "BRI", "Mandiri", "BSI", "CIMB Niaga", "Danamon", "Permata", "BTPN", "Mega",
@@ -35,6 +35,19 @@ export default function TransferScreen({ onBack }: TransferScreenProps) {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h2 className="text-xl font-bold text-foreground">Transfer</h2>
+      </div>
+
+      {/* Saldo Card */}
+      <div className="glass-card p-4 neon-border flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center">
+            <Wallet className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Saldo Tersedia</p>
+            <p className="text-lg font-bold text-foreground">Rp 1.250.000</p>
+          </div>
+        </div>
       </div>
 
       {/* Form */}
