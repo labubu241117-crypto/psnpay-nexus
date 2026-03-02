@@ -1,5 +1,6 @@
-import { Shield, UserCheck, Lock, ChevronRight, BadgeCheck, User, KeyRound, FileText, Info, Fingerprint, LogOut } from "lucide-react";
+import { Shield, UserCheck, Lock, ChevronRight, BadgeCheck, User, KeyRound, FileText, Info, Fingerprint, LogOut, Sun, Moon } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
+import { useTheme } from "@/hooks/use-theme";
 
 const accountSettings = [
   { icon: User, label: "Profil", color: "text-primary" },
@@ -14,8 +15,21 @@ const services = [
 ];
 
 export default function AccountScreen() {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
+      {/* Header with theme toggle */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-foreground">Akun Saya</h2>
+        <button
+          onClick={toggleTheme}
+          className="w-10 h-10 rounded-2xl bg-secondary flex items-center justify-center text-primary hover:neon-glow transition-all"
+        >
+          {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
+      </div>
+
       {/* Profile Card */}
       <div className="glass-card p-6 neon-border">
         <div className="flex items-center gap-4">
