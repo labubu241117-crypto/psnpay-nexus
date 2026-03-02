@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ArrowLeft, Wallet, Eye, EyeOff, Coins, DollarSign, CreditCard, QrCode, Store, Send } from "lucide-react";
+import TransferBankDetail from "@/components/TransferBankDetail";
 
 const currencies = [
   { code: "IDR", label: "Rupiah (IDR)", symbol: "Rp" },
@@ -35,6 +36,7 @@ export default function TopUpScreen({ onBack }: TopUpScreenProps) {
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [saldoVisible, setSaldoVisible] = useState(true);
+  const [showBankDetail, setShowBankDetail] = useState(false);
 
   const currentCurrency = currencies.find((c) => c.code === currency)!;
   const presets = nominalPresets[currency] || nominalPresets.IDR;
@@ -53,8 +55,22 @@ export default function TopUpScreen({ onBack }: TopUpScreenProps) {
 
   const handleSubmit = () => {
     if (!isValid) return;
+    if (paymentMethod === "bank") {
+      setShowBankDetail(true);
+      return;
+    }
     alert(`Top Up ${currentCurrency.symbol}${parseInt(nominal).toLocaleString("id-ID")} via ${paymentMethods.find(p => p.id === paymentMethod)?.label}`);
   };
+
+  if (showBankDetail) {
+    return (
+      <TransferBankDetail
+        onBack={() => setShowBankDetail(false)}
+        nominal={nominal}
+        currencySymbol={currentCurrency.symbol}
+      />
+    );
+  }
 
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
