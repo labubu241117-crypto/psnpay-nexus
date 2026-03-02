@@ -51,8 +51,7 @@ export default function MenuScreen({ onBack, onNavigate }: MenuScreenProps) {
   })).filter((cat) => cat.items.length > 0);
 
   const handleItemClick = (serviceId: string) => {
-    // Special cases that have dedicated screens
-    if (serviceId === "transfer" || serviceId === "emoney-service") {
+    if (serviceId === "transfer" || serviceId === "emoney-service" || serviceId === "simpanan") {
       onNavigate?.(serviceId === "emoney-service" ? "emoney" : serviceId);
     } else {
       onNavigate?.(`service:${serviceId}`);
