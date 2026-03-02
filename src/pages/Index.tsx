@@ -8,26 +8,31 @@ import MenuScreen from "@/components/MenuScreen";
 import TransferScreen from "@/components/TransferScreen";
 import TopUpScreen from "@/components/TopUpScreen";
 import EMoneyScreen from "@/components/EMoneyScreen";
+import ServiceScreen from "@/components/ServiceScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
   const [overlay, setOverlay] = useState<string | null>(null);
 
   const handleNavigate = (screen: string) => {
-    if (screen === "menu" || screen === "transfer" || screen === "topup" || screen === "emoney") {
-      setOverlay(screen);
-    } else if (screen === "wallet") {
+    if (screen === "wallet") {
       setActiveTab("wallet");
+    } else {
+      setOverlay(screen);
     }
   };
 
   if (overlay) {
+    const isService = overlay.startsWith("service:");
+    const serviceId = isService ? overlay.replace("service:", "") : null;
+
     return (
       <div className="min-h-screen max-w-md mx-auto relative">
         {overlay === "menu" && <MenuScreen onBack={() => setOverlay(null)} onNavigate={(s) => setOverlay(s)} />}
         {overlay === "transfer" && <TransferScreen onBack={() => setOverlay(null)} />}
         {overlay === "topup" && <TopUpScreen onBack={() => setOverlay(null)} />}
         {overlay === "emoney" && <EMoneyScreen onBack={() => setOverlay(null)} />}
+        {isService && serviceId && <ServiceScreen serviceId={serviceId} onBack={() => setOverlay("menu")} />}
         <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
     );

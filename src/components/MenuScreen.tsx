@@ -6,33 +6,33 @@ const categories = [
     title: "Keuangan",
     icon: Banknote,
     items: [
-      { icon: Banknote, label: "Transfer" },
-      { icon: PiggyBank, label: "Simpanan" },
-      { icon: MapPin, label: "Check-in" },
+      { icon: Banknote, label: "Transfer", serviceId: "transfer" },
+      { icon: PiggyBank, label: "Simpanan", serviceId: "simpanan" },
+      { icon: MapPin, label: "Check-in", serviceId: "checkin" },
     ],
   },
   {
     title: "Prabayar",
     icon: Smartphone,
     items: [
-      { icon: Smartphone, label: "Pulsa" },
-      { icon: Zap, label: "Token PLN" },
-      { icon: Wifi, label: "Paket Data" },
-      { icon: Gamepad2, label: "V-Game" },
-      { icon: Wallet, label: "EWallet" },
-      { icon: Radio, label: "EMoney" },
-      { icon: Truck, label: "Saldo Ojol" },
-      { icon: Film, label: "Hiburan" },
+      { icon: Smartphone, label: "Pulsa", serviceId: "pulsa" },
+      { icon: Zap, label: "Token PLN", serviceId: "token-pln" },
+      { icon: Wifi, label: "Paket Data", serviceId: "paket-data" },
+      { icon: Gamepad2, label: "V-Game", serviceId: "vgame" },
+      { icon: Wallet, label: "EWallet", serviceId: "ewallet" },
+      { icon: Radio, label: "EMoney", serviceId: "emoney-service" },
+      { icon: Truck, label: "Saldo Ojol", serviceId: "saldo-ojol" },
+      { icon: Film, label: "Hiburan", serviceId: "hiburan" },
     ],
   },
   {
     title: "Pascabayar",
     icon: FileText,
     items: [
-      { icon: Zap, label: "T-Pln" },
-      { icon: Droplets, label: "T-Pdam" },
-      { icon: Recycle, label: "T-Bpjs" },
-      { icon: DollarSign, label: "Finance" },
+      { icon: Zap, label: "T-Pln", serviceId: "tagihan-pln" },
+      { icon: Droplets, label: "T-Pdam", serviceId: "tagihan-pdam" },
+      { icon: Recycle, label: "T-Bpjs", serviceId: "tagihan-bpjs" },
+      { icon: DollarSign, label: "Finance", serviceId: "finance" },
     ],
   },
 ];
@@ -49,6 +49,15 @@ export default function MenuScreen({ onBack, onNavigate }: MenuScreenProps) {
     ...cat,
     items: cat.items.filter((item) => item.label.toLowerCase().includes(search.toLowerCase())),
   })).filter((cat) => cat.items.length > 0);
+
+  const handleItemClick = (serviceId: string) => {
+    // Special cases that have dedicated screens
+    if (serviceId === "transfer" || serviceId === "emoney-service") {
+      onNavigate?.(serviceId === "emoney-service" ? "emoney" : serviceId);
+    } else {
+      onNavigate?.(`service:${serviceId}`);
+    }
+  };
 
   return (
     <div className="px-4 pb-28 pt-6 space-y-6">
@@ -81,9 +90,7 @@ export default function MenuScreen({ onBack, onNavigate }: MenuScreenProps) {
           </div>
           <div className="grid grid-cols-4 gap-3">
             {cat.items.map((item) => (
-              <button key={item.label} className="action-button group" onClick={() => {
-                if (item.label === "Transfer") onNavigate?.("transfer");
-              }}>
+              <button key={item.label} className="action-button group" onClick={() => handleItemClick(item.serviceId)}>
                 <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center transition-all group-hover:neon-glow">
                   <item.icon className="w-5 h-5 text-primary" />
                 </div>
