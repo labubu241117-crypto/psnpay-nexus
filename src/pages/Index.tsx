@@ -4,6 +4,7 @@ import HomeScreen from "@/components/HomeScreen";
 import WalletScreen from "@/components/WalletScreen";
 import ActivityScreen from "@/components/ActivityScreen";
 import AccountScreen from "@/components/AccountScreen";
+import QrScreen from "@/components/QrScreen";
 import MenuScreen from "@/components/MenuScreen";
 import TransferScreen from "@/components/TransferScreen";
 import TopUpScreen from "@/components/TopUpScreen";
@@ -56,14 +57,7 @@ const Index = () => {
       case "wallet": return <WalletScreen />;
       case "activity": return <ActivityScreen />;
       case "account": return <AccountScreen />;
-      case "qr": return (
-        <div className="px-4 pb-28 pt-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-          <div className="w-48 h-48 rounded-3xl neon-border glass-card flex items-center justify-center animate-pulse-neon">
-            <span className="text-6xl font-bold neon-text">QR</span>
-          </div>
-          <p className="text-muted-foreground text-sm">Scan atau tunjukkan QR untuk bayar</p>
-        </div>
-      );
+      case "qr": return <QrScreen />;
       default: return <HomeScreen onNavigate={handleNavigate} />;
     }
   };
