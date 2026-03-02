@@ -9,6 +9,7 @@ import TransferScreen from "@/components/TransferScreen";
 import TopUpScreen from "@/components/TopUpScreen";
 import EMoneyScreen from "@/components/EMoneyScreen";
 import ServiceScreen from "@/components/ServiceScreen";
+import SimpananScreen from "@/components/SimpananScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
@@ -32,6 +33,7 @@ const Index = () => {
         {overlay === "transfer" && <TransferScreen onBack={() => setOverlay(null)} />}
         {overlay === "topup" && <TopUpScreen onBack={() => setOverlay(null)} />}
         {overlay === "emoney" && <EMoneyScreen onBack={() => setOverlay(null)} />}
+        {overlay === "simpanan" && <SimpananScreen onBack={() => setOverlay("menu")} />}
         {isService && serviceId && <ServiceScreen serviceId={serviceId} onBack={() => setOverlay("menu")} />}
         <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
