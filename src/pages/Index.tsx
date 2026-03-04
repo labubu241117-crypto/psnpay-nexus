@@ -17,6 +17,7 @@ import TokenPlnScreen from "@/components/TokenPlnScreen";
 import PaketDataScreen from "@/components/PaketDataScreen";
 import VGameScreen from "@/components/VGameScreen";
 import MutasiScreen from "@/components/MutasiScreen";
+import NewsScreen from "@/components/NewsScreen";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<TabId>("home");
@@ -47,6 +48,7 @@ const Index = () => {
         {overlay === "paket-data" && <PaketDataScreen onBack={() => setOverlay("menu")} />}
         {overlay === "vgame" && <VGameScreen onBack={() => setOverlay("menu")} />}
         {overlay === "mutasi" && <MutasiScreen onBack={() => setOverlay(null)} />}
+        {overlay === "news" && <NewsScreen onBack={() => setOverlay(null)} />}
         {isService && serviceId && <ServiceScreen serviceId={serviceId} onBack={() => setOverlay("menu")} />}
         <BottomNav active={activeTab} onChange={(tab) => { setOverlay(null); setActiveTab(tab); }} />
       </div>
