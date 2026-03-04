@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Shield, Eye, EyeOff, ArrowLeftRight, PlusCircle, CreditCard, MoreHorizontal, Copy, Star, Store, Gift, Percent, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import { Shield, Eye, EyeOff, ArrowLeftRight, PlusCircle, CreditCard, MoreHorizontal, Copy, Star, Store, Gift, Percent, Zap, ChevronLeft, ChevronRight, BookOpen, Clock, ChevronRight as ChevronRightIcon } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
 import { useI18n } from "@/lib/i18n";
 
@@ -223,6 +223,38 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
               </div>
               <p className="font-medium text-sm text-foreground truncate">{mitra.name}</p>
               <p className="text-xs text-muted-foreground truncate">{mitra.location}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Articles */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-foreground">{t("home.articles")}</h3>
+          <button className="text-xs text-primary font-medium">{t("home.viewAll")}</button>
+        </div>
+        <div className="space-y-3">
+          {[
+            { titleKey: "home.article1Title", descKey: "home.article1Desc", mins: 5, category: "Finance" },
+            { titleKey: "home.article2Title", descKey: "home.article2Desc", mins: 4, category: "Koperasi" },
+            { titleKey: "home.article3Title", descKey: "home.article3Desc", mins: 3, category: "QRIS" },
+          ].map((article, i) => (
+            <div key={i} className="glass-card p-4 flex gap-3 items-start group cursor-pointer hover:border-primary/30 transition-all">
+              <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{article.category}</span>
+                  <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                    <Clock className="w-2.5 h-2.5" /> {article.mins} {t("home.minRead")}
+                  </span>
+                </div>
+                <p className="font-medium text-sm text-foreground line-clamp-1">{t(article.titleKey)}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{t(article.descKey)}</p>
+              </div>
+              <ChevronRightIcon className="w-4 h-4 text-muted-foreground mt-1 flex-shrink-0 group-hover:text-primary transition-colors" />
             </div>
           ))}
         </div>
