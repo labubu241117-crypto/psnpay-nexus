@@ -232,7 +232,7 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-foreground">{t("home.articles")}</h3>
-          <button className="text-xs text-primary font-medium">{t("home.viewAll")}</button>
+          <button onClick={() => onNavigate?.("news")} className="text-xs text-primary font-medium">{t("home.viewAll")}</button>
         </div>
         <div className="space-y-3">
           {[
