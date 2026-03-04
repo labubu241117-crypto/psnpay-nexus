@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { Shield, Eye, EyeOff, ArrowLeftRight, PlusCircle, CreditCard, MoreHorizontal, Copy, Star, Store, Gift, Percent, Zap, ChevronLeft, ChevronRight, BookOpen, Clock, ChevronRight as ChevronRightIcon } from "lucide-react";
 import psnpayLogo from "@/assets/psnpay-logo.png";
 import { useI18n } from "@/lib/i18n";
+import articleFinance from "@/assets/article-finance.jpg";
+import articleKoperasi from "@/assets/article-koperasi.jpg";
+import articleQris from "@/assets/article-qris.jpg";
 
 function AnimatedBalance({ value, visible }: { value: string; visible: boolean }) {
   const [display, setDisplay] = useState("Rp 0");
@@ -236,14 +239,12 @@ export default function HomeScreen({ onNavigate }: HomeScreenProps) {
         </div>
         <div className="space-y-3">
           {[
-            { titleKey: "home.article1Title", descKey: "home.article1Desc", mins: 5, category: "Finance" },
-            { titleKey: "home.article2Title", descKey: "home.article2Desc", mins: 4, category: "Koperasi" },
-            { titleKey: "home.article3Title", descKey: "home.article3Desc", mins: 3, category: "QRIS" },
+            { titleKey: "home.article1Title", descKey: "home.article1Desc", mins: 5, category: "Finance", image: articleFinance },
+            { titleKey: "home.article2Title", descKey: "home.article2Desc", mins: 4, category: "Koperasi", image: articleKoperasi },
+            { titleKey: "home.article3Title", descKey: "home.article3Desc", mins: 3, category: "QRIS", image: articleQris },
           ].map((article, i) => (
             <div key={i} className="glass-card p-4 flex gap-3 items-start group cursor-pointer hover:border-primary/30 transition-all">
-              <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
-                <BookOpen className="w-6 h-6 text-primary" />
-              </div>
+              <img src={article.image} alt="" className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{article.category}</span>

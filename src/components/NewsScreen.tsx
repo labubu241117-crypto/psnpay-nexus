@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { ArrowLeft, BookOpen, Clock, TrendingUp, Share2, Bookmark, Newspaper, Award, Tag, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import articleFinance from "@/assets/article-finance.jpg";
+import articleKoperasi from "@/assets/article-koperasi.jpg";
+import articleQris from "@/assets/article-qris.jpg";
+import articleSecurity from "@/assets/article-security.jpg";
+import articleAward from "@/assets/article-award.jpg";
+import articlePromo from "@/assets/article-promo.jpg";
 
 interface Article {
   id: number;
@@ -9,17 +15,18 @@ interface Article {
   mins: number;
   category: string;
   icon: typeof BookOpen;
+  image: string;
   date: string;
   featured?: boolean;
 }
 
 const articles: Article[] = [
-  { id: 1, titleKey: "home.article1Title", descKey: "home.article1Desc", mins: 5, category: "finance", icon: BookOpen, date: "2025-03-01", featured: true },
-  { id: 2, titleKey: "home.article2Title", descKey: "home.article2Desc", mins: 4, category: "tips", icon: TrendingUp, date: "2025-02-28" },
-  { id: 3, titleKey: "home.article3Title", descKey: "home.article3Desc", mins: 3, category: "tech", icon: ShieldCheck, date: "2025-02-27" },
-  { id: 4, titleKey: "news.article4Title", descKey: "news.article4Desc", mins: 6, category: "tech", icon: ShieldCheck, date: "2025-02-25" },
-  { id: 5, titleKey: "news.article5Title", descKey: "news.article5Desc", mins: 3, category: "finance", icon: Award, date: "2025-02-23", featured: true },
-  { id: 6, titleKey: "news.article6Title", descKey: "news.article6Desc", mins: 2, category: "promo", icon: Tag, date: "2025-02-20" },
+  { id: 1, titleKey: "home.article1Title", descKey: "home.article1Desc", mins: 5, category: "finance", icon: BookOpen, image: articleFinance, date: "2025-03-01", featured: true },
+  { id: 2, titleKey: "home.article2Title", descKey: "home.article2Desc", mins: 4, category: "tips", icon: TrendingUp, image: articleKoperasi, date: "2025-02-28" },
+  { id: 3, titleKey: "home.article3Title", descKey: "home.article3Desc", mins: 3, category: "tech", icon: ShieldCheck, image: articleQris, date: "2025-02-27" },
+  { id: 4, titleKey: "news.article4Title", descKey: "news.article4Desc", mins: 6, category: "tech", icon: ShieldCheck, image: articleSecurity, date: "2025-02-25" },
+  { id: 5, titleKey: "news.article5Title", descKey: "news.article5Desc", mins: 3, category: "finance", icon: Award, image: articleAward, date: "2025-02-23", featured: true },
+  { id: 6, titleKey: "news.article6Title", descKey: "news.article6Desc", mins: 2, category: "promo", icon: Tag, image: articlePromo, date: "2025-02-20" },
 ];
 
 interface NewsScreenProps {
@@ -75,9 +82,7 @@ export default function NewsScreen({ onBack }: NewsScreenProps) {
             <span className="text-xs text-muted-foreground">{selectedArticle.date}</span>
           </div>
           <h2 className="text-xl font-bold text-foreground leading-tight">{t(selectedArticle.titleKey)}</h2>
-          <div className="w-full h-48 rounded-2xl bg-secondary flex items-center justify-center">
-            <selectedArticle.icon className="w-16 h-16 text-muted-foreground/30" />
-          </div>
+          <img src={selectedArticle.image} alt="" className="w-full h-48 rounded-2xl object-cover" />
           <p className="text-sm text-muted-foreground leading-relaxed">{t(selectedArticle.descKey)}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">{t(selectedArticle.descKey)}</p>
           <div className="flex gap-3 pt-2">
@@ -129,8 +134,8 @@ export default function NewsScreen({ onBack }: NewsScreenProps) {
             onClick={() => setSelectedArticle(featured)}
             className="w-full text-left glass-card overflow-hidden neon-border"
           >
-            <div className="w-full h-36 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative">
-              <featured.icon className="w-12 h-12 text-primary/40" />
+            <div className="relative">
+              <img src={featured.image} alt="" className="w-full h-36 object-cover" />
               <span className="absolute top-3 left-3 text-[10px] px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-medium flex items-center gap-1">
                 <TrendingUp className="w-2.5 h-2.5" /> {t("news.trending")}
               </span>
@@ -155,9 +160,7 @@ export default function NewsScreen({ onBack }: NewsScreenProps) {
             onClick={() => setSelectedArticle(article)}
             className="w-full text-left glass-card p-4 flex gap-3 items-start group hover:border-primary/30 transition-all"
           >
-            <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center flex-shrink-0">
-              <article.icon className="w-6 h-6 text-primary" />
-            </div>
+            <img src={article.image} alt="" className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium capitalize">{article.category}</span>
